@@ -1173,10 +1173,10 @@
             iniciarSincronizacao();
         });
 
-        // Sistema de sincronização
+        // Sistema de sincronização - CORRIGIDO
         function iniciarSincronizacao() {
-            // Verificar mudanças a cada 2 segundos
-            setInterval(verificarMudancas, 2000);
+            // Verificar mudanças a cada 1 segundo (mais rápido)
+            setInterval(verificarMudancas, 1000);
             
             // Atualizar indicador de sincronização
             atualizarIndicadorSincronizacao();
@@ -1192,30 +1192,28 @@
                 sincronizando = true;
                 atualizarIndicadorSincronizacao('sincronizando');
                 
-                // Carregar dados atualizados
+                console.log('Sincronizando dados...');
+                
+                // Carregar TODOS os dados atualizados do localStorage
                 const novosHospedes = JSON.parse(localStorage.getItem('hospedesAtivos')) || [];
                 const novoHistorico = JSON.parse(localStorage.getItem('historico')) || [];
                 
-                // Verificar se houve mudanças
-                if (JSON.stringify(novosHospedes) !== JSON.stringify(hospedesAtivos) || 
-                    JSON.stringify(novoHistorico) !== JSON.stringify(historico)) {
-                    
-                    hospedesAtivos = novosHospedes;
-                    historico = novoHistorico;
-                    ultimaAtualizacao = novaAtualizacao;
-                    
-                    // Atualizar interface
-                    carregarQuartos();
-                    carregarHospedesAtivos();
-                    carregarHistorico();
-                    atualizarQuantidades();
-                    
-                    // Atualizar tempo da última atualização
-                    document.getElementById('last-update-time').textContent = 
-                        new Date().toLocaleTimeString('pt-BR');
-                    
-                    console.log('Dados sincronizados com sucesso!');
-                }
+                // Atualizar as variáveis locais independente de mudanças
+                hospedesAtivos = novosHospedes;
+                historico = novoHistorico;
+                ultimaAtualizacao = novaAtualizacao;
+                
+                // Atualizar interface
+                carregarQuartos();
+                carregarHospedesAtivos();
+                carregarHistorico();
+                atualizarQuantidades();
+                
+                // Atualizar tempo da última atualização
+                document.getElementById('last-update-time').textContent = 
+                    new Date().toLocaleTimeString('pt-BR');
+                
+                console.log('Dados sincronizados com sucesso!');
                 
                 setTimeout(() => {
                     sincronizando = false;
@@ -1847,7 +1845,7 @@
             modal.style.display = 'flex';
         }
         
-        // Função para salvar edição de check-in
+        // Função para salvar edição de check-in - CORRIGIDA
         function salvarEdicaoCheckin() {
             const quarto = parseInt(document.getElementById('editar-quarto').value);
             const status = document.getElementById('editar-status').value;
@@ -2042,8 +2040,9 @@
             return dataFormatada;
         }
         
-        // Função para salvar dados no localStorage
+        // Função para salvar dados no localStorage - CORRIGIDA
         function salvarDados() {
+            // Salvar todos os dados no localStorage
             localStorage.setItem('hospedesAtivos', JSON.stringify(hospedesAtivos));
             localStorage.setItem('historico', JSON.stringify(historico));
             
@@ -2055,6 +2054,12 @@
             // Atualizar tempo da última atualização
             document.getElementById('last-update-time').textContent = 
                 new Date().toLocaleTimeString('pt-BR');
+            
+            console.log('Dados salvos e sincronizados:', {
+                hospedesAtivos: hospedesAtivos.length,
+                historico: historico.length,
+                timestamp: timestamp
+            });
         }
     </script>
 </body>
