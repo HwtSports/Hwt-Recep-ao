@@ -7,63 +7,1069 @@
     <meta name="description" content="Sistema gratuito de gestão hoteleira para pequenos hotéis e pousadas">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ... (todo o CSS permanece igual) ... */
-        
-        /* NOVOS ESTILOS ADICIONADOS */
-        .status-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+        :root {
+            --laranja: #FF8C00;
+            --laranja-claro: #FFA500;
+            --laranja-escuro: #E67E00;
+            --cinza: #333333;
+            --cinza-claro: #f4f4f4;
+            --cinza-medio: #e0e0e0;
+            --branco: #ffffff;
+            --verde: #4CAF50;
+            --vermelho: #F44336;
+            --azul: #2196F3;
+            --amarelo: #FFC107;
+            --preto: #000000;
         }
         
-        .status-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--cinza-claro);
+            color: var(--cinza);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Tela de Login */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--laranja) 0%, var(--cinza) 100%);
+        }
+        
+        .login-container {
+            background-color: var(--branco);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
             text-align: center;
         }
         
-        .status-btn.disponivel {
+        .login-logo {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .logo-hwt {
+            color: var(--laranja);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .login-subtitle {
+            color: var(--cinza);
+            margin-bottom: 30px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .login-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--cinza-medio);
+        }
+        
+        .login-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--cinza);
+            transition: all 0.3s;
+        }
+        
+        .login-tab.active {
+            color: var(--laranja);
+            border-bottom: 3px solid var(--laranja);
+        }
+        
+        .login-form {
+            display: none;
+        }
+        
+        .login-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--cinza);
+        }
+        
+        input, select, button, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--cinza-medio);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--laranja);
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+        }
+        
+        button {
+            background-color: var(--laranja);
+            color: var(--branco);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--laranja-escuro);
+        }
+        
+        .secondary-btn {
+            background-color: transparent;
+            color: var(--cinza);
+            border: 1px solid var(--cinza-medio);
+        }
+        
+        .secondary-btn:hover {
+            background-color: var(--cinza-claro);
+        }
+        
+        /* Sistema Principal */
+        #main-system {
+            display: none;
+        }
+        
+        header {
+            background-color: var(--branco);
+            color: var(--cinza);
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .user-name {
+            margin-right: 15px;
+            color: var(--cinza);
+        }
+        
+        .logout-btn {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background-color: var(--cinza);
+        }
+        
+        .logout-btn:hover {
+            background-color: #555;
+        }
+        
+        .logo {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .logo-hwt {
+            color: var(--laranja);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            background-color: var(--cinza);
+            padding: 10px 0;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav li {
+            margin: 0 15px;
+        }
+        
+        nav a {
+            color: var(--branco);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: var(--laranja);
+        }
+        
+        .tab-content {
+            display: none;
+            margin-top: 20px;
+            background-color: var(--branco);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .quartos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .quarto {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .quarto.disponivel {
+            background-color: #e8f5e9;
+            border-color: var(--verde);
+        }
+        
+        .quarto.ocupado {
+            background-color: #ffebee;
+            border-color: var(--vermelho);
+        }
+        
+        .quarto.manutencao {
+            background-color: #2c2c2c;
+            border-color: var(--preto);
+            color: var(--branco);
+        }
+        
+        .quarto:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quarto-numero {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .quarto.manutencao .quarto-numero {
+            color: var(--branco);
+        }
+        
+        .quarto-status {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .quarto.disponivel .quarto-status {
+            color: var(--verde);
+        }
+        
+        .quarto.ocupado .quarto-status {
+            color: var(--vermelho);
+        }
+        
+        .quarto.manutencao .quarto-status {
+            color: var(--amarelo);
+        }
+        
+        .quarto-pessoas {
+            font-size: 0.9rem;
+            color: var(--cinza);
+            margin-bottom: 10px;
+        }
+        
+        .quarto.manutencao .quarto-pessoas {
+            color: var(--branco);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--laranja);
+            color: var(--branco);
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: var(--branco);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--cinza);
+        }
+        
+        .checkout-btn {
+            background-color: var(--vermelho);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .manutencao-btn {
+            background-color: var(--amarelo);
+            color: var(--cinza);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .manutencao-btn:hover {
+            background-color: #e0a800;
+        }
+        
+        .andar-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .andar-btn {
+            width: auto;
+            margin: 0 5px;
+            padding: 8px 15px;
+        }
+        
+        .andar-btn.active {
+            background-color: var(--cinza);
+        }
+        
+        .quantidade-info {
+            display: inline-block;
+            background-color: var(--laranja);
+            color: var(--branco);
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            line-height: 25px;
+            margin-left: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .edit-btn {
+            background-color: var(--azul);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .edit-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--cinza);
+            border-bottom: 2px solid var(--laranja);
+            padding-bottom: 8px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-dot.disponivel {
+            background-color: var(--verde);
+        }
+        
+        .status-dot.ocupado {
+            background-color: var(--vermelho);
+        }
+        
+        .status-dot.manutencao {
+            background-color: var(--amarelo);
+        }
+        
+        .hospede-secao {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--cinza-claro);
+            border-radius: 6px;
+        }
+        
+        .hospede-titulo {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--cinza);
+            border-bottom: 1px solid var(--cinza-medio);
+            padding-bottom: 5px;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .time-inputs .form-group {
+            flex: 1;
+        }
+        
+        .data-hora-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: var(--laranja);
+            color: var(--branco);
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .data-atual, .hora-atual {
+            font-size: 1.1rem;
+        }
+
+        .status-historico {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .status-ativo {
             background-color: var(--verde);
             color: white;
         }
         
-        .status-btn.ocupado {
-            background-color: var(--vermelho);
+        .status-finalizado {
+            background-color: var(--cinza);
             color: white;
         }
         
-        .status-btn.manutencao {
+        .status-automatico {
+            background-color: var(--laranja);
+            color: white;
+        }
+        
+        .status-manutencao {
             background-color: var(--amarelo);
             color: var(--cinza);
         }
         
-        .status-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+        /* Estilos para o histórico com abas */
+        .historico-accordion {
+            margin-top: 20px;
         }
         
-        .status-btn.active {
-            box-shadow: 0 0 0 2px var(--branco), 0 0 0 4px currentColor;
+        .historico-item {
+            border: 1px solid var(--cinza-medio);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            overflow: hidden;
         }
         
-        /* FIM DOS NOVOS ESTILOS */
+        .historico-header {
+            background-color: var(--cinza-claro);
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        .historico-header:hover {
+            background-color: var(--cinza-medio);
+        }
+        
+        .historico-header.active {
+            background-color: var(--laranja);
+            color: white;
+        }
+        
+        .historico-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .historico-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .historico-info-label {
+            font-size: 0.8rem;
+            color: var(--cinza);
+        }
+        
+        .historico-info-value {
+            font-weight: bold;
+        }
+        
+        .historico-detalhes {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: var(--branco);
+        }
+        
+        .historico-detalhes.active {
+            padding: 20px;
+            max-height: 500px;
+        }
+        
+        .detalhes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .detalhes-item {
+            margin-bottom: 10px;
+        }
+        
+        .detalhes-label {
+            font-weight: bold;
+            color: var(--cinza);
+            margin-bottom: 5px;
+        }
+        
+        .detalhes-value {
+            padding: 8px;
+            background-color: var(--cinza-claro);
+            border-radius: 4px;
+        }
+        
+        .historico-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-detalhes {
+            background-color: transparent;
+            border: 1px solid var(--laranja);
+            color: var(--laranja);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-detalhes:hover {
+            background-color: var(--laranja);
+            color: white;
+        }
+        
+        .btn-detalhes i {
+            margin-right: 5px;
+        }
+        
+        .btn-detalhes.aberto {
+            background-color: var(--laranja);
+            color: white;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        
+        .toggle-icon.aberto {
+            transform: rotate(180deg);
+        }
+        
+        .historico-filtros {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filtro-item {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .historico-vazio {
+            text-align: center;
+            padding: 40px;
+            color: var(--cinza-medio);
+            font-style: italic;
+        }
+        
+        .hospede-info {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--cinza-claro);
+            border-radius: 4px;
+        }
+        
+        .hospede-info-label {
+            font-weight: bold;
+            color: var(--cinza);
+        }
+        
+        .info-box {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .observacao-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--laranja);
+        }
+        
+        .observacao-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--cinza);
+        }
+        
+        .observacao-text {
+            font-style: italic;
+            color: #666;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .backup-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--cinza-claro);
+            border-radius: 8px;
+            border-left: 4px solid var(--laranja);
+        }
+        
+        .backup-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--cinza);
+        }
+        
+        .backup-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .backup-btn {
+            background-color: var(--azul);
+            width: auto;
+            padding: 10px 20px;
+        }
+        
+        .backup-btn.export {
+            background-color: var(--verde);
+        }
+        
+        .backup-btn.import {
+            background-color: var(--laranja);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--laranja);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .file-label:hover {
+            background-color: var(--laranja-escuro);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .quartos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .data-hora-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .historico-filtros {
+                flex-direction: column;
+            }
+            
+            .backup-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- ... (todo o HTML permanece igual) ... -->
+    <!-- Tela de Login -->
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="login-logo">
+                <span class="logo-hwt">Recepção HWT</span>
+            </div>
+            <div class="login-subtitle">Sistema de Gestão Hoteleira</div>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" data-tab="login">Entrar</button>
+                <button class="login-tab" data-tab="register">Criar Usuário</button>
+            </div>
+            
+            <form id="login-form" class="login-form active">
+                <div class="form-group">
+                    <label for="login-username">Usuário</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Senha</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                
+                <button type="submit">Entrar</button>
+            </form>
+            
+            <form id="register-form" class="login-form">
+                <div class="form-group">
+                    <label for="register-name">Nome Completo</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-username">Usuário</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Senha</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirmar Senha</label>
+                    <input type="password" id="register-confirm-password" required>
+                </div>
+                
+                <button type="submit">Criar Usuário</button>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i> Limite máximo: 4 usuários no sistema
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Sistema Principal -->
+    <div id="main-system" class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-hwt">Recepção HWT</span>
+            </div>
+            <div class="user-info">
+                <span class="user-name">Olá, <span id="current-user">Usuário</span></span>
+                <button class="logout-btn" id="logout-btn">Sair</button>
+            </div>
+        </header>
+        
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link" data-tab="quartos">Quartos <span id="quantidade-quartos" class="quantidade-info">0</span></a></li>
+                <li><a href="#" class="nav-link" data-tab="ocupados">Ocupados <span id="quantidade-hospedes" class="quantidade-info">0</span></a></li>
+                <li><a href="#" class="nav-link" data-tab="historico">Histórico</a></li>
+                <li><a href="#" class="nav-link" data-tab="backup">Backup</a></li>
+            </ul>
+        </nav>
+        
+        <div id="quartos" class="tab-content active">
+            <h2 class="page-title">Quartos</h2>
+            
+            <!-- Container para data e hora atual -->
+            <div class="data-hora-container">
+                <div class="data-atual" id="data-atual"></div>
+                <div class="hora-atual" id="hora-atual"></div>
+            </div>
+            
+            <div class="andar-selector">
+                <button class="andar-btn active" data-andar="terreo">Térreo</button>
+                <button class="andar-btn" data-andar="primeiro">Primeiro Andar</button>
+                <button class="andar-btn" data-andar="segundo">Segundo Andar</button>
+                <button class="andar-btn" data-andar="tenis">Tênis Academy</button>
+                <button class="andar-btn" data-andar="soccer">Soccer Academy</button>
+            </div>
+            <div id="quartos-container" class="quartos-grid">
+                <!-- Quartos serão carregados aqui via JavaScript -->
+            </div>
+        </div>
+        
+        <div id="ocupados" class="tab-content">
+            <h2 class="page-title">Ocupados</h2>
+            <table id="tabela-hospedes">
+                <thead>
+                    <tr>
+                        <th>Quarto</th>
+                        <th>Hóspedes</th>
+                        <th>Documentos</th>
+                        <th>Telefones</th>
+                        <th>Pessoas</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dados serão preenchidos via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="historico" class="tab-content">
+            <h2 class="page-title">Histórico</h2>
+            
+            <div class="historico-filtros">
+                <div class="form-group filtro-item">
+                    <label for="filtro-status">Status</label>
+                    <select id="filtro-status">
+                        <option value="todos">Todos</option>
+                        <option value="ativo">Ativos</option>
+                        <option value="finalizado">Finalizados</option>
+                        <option value="automatico">Auto Finalizados</option>
+                        <option value="manutencao">Manutenção</option>
+                    </select>
+                </div>
+                
+                <div class="form-group filtro-item">
+                    <label for="filtro-data-entrada">Data de Entrada</label>
+                    <input type="date" id="filtro-data-entrada">
+                </div>
+                
+                <div class="form-group filtro-item">
+                    <label for="filtro-quarto">Quarto</label>
+                    <input type="number" id="filtro-quarto" placeholder="Número do quarto">
+                </div>
+            </div>
+            
+            <div class="historico-accordion" id="historico-accordion">
+                <!-- Histórico será carregado aqui via JavaScript -->
+            </div>
+        </div>
+
+        <div id="backup" class="tab-content">
+            <h2 class="page-title">Backup de Dados</h2>
+            
+            <div class="backup-section">
+                <h3 class="backup-title">Exportar Dados</h3>
+                <p>Exporte todos os dados do sistema para um arquivo JSON que pode ser usado em outro computador.</p>
+                <div class="backup-buttons">
+                    <button class="backup-btn export" id="export-btn">
+                        <i class="fas fa-download"></i> Exportar Dados
+                    </button>
+                </div>
+            </div>
+            
+            <div class="backup-section">
+                <h3 class="backup-title">Importar Dados</h3>
+                <p>Importe dados de um arquivo JSON para substituir todos os dados atuais do sistema.</p>
+                <div class="backup-buttons">
+                    <label for="import-file" class="file-label">
+                        <i class="fas fa-upload"></i> Selecionar Arquivo
+                    </label>
+                    <input type="file" id="import-file" accept=".json" class="file-input">
+                    <button class="backup-btn import" id="import-btn" disabled>
+                        <i class="fas fa-file-import"></i> Importar Dados
+                    </button>
+                </div>
+                <div id="import-status" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="backup-section">
+                <h3 class="backup-title">Informações do Sistema</h3>
+                <div class="info-box">
+                    <p><strong>Total de Hóspedes Ativos:</strong> <span id="info-hospedes-ativos">0</span></p>
+                    <p><strong>Total no Histórico:</strong> <span id="info-historico">0</span> registros</p>
+                    <p><strong>Total de Usuários:</strong> <span id="info-usuarios">0</span></p>
+                    <p><strong>Última Atualização:</strong> <span id="info-ultima-atualizacao">-</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para detalhes do quarto -->
+    <div id="modal-quarto" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-titulo">Detalhes do Quarto</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div id="modal-conteudo">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
     
     <!-- Modal para editar check-in -->
     <div id="modal-editar-checkin" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-editar-titulo">Editar Quarto</h3>
+                <h3 id="modal-editar-titulo">Editar Check-in</h3>
                 <span class="close close-editar">&times;</span>
             </div>
             <form id="editar-checkin-form">
@@ -71,20 +1077,11 @@
                 
                 <div class="form-group">
                     <label for="editar-status">Status do Quarto</label>
-                    <!-- REMOVEMOS O SELECT E ADICIONAMOS OS BOTÕES -->
-                    <div class="status-actions">
-                        <button type="button" class="status-btn disponivel active" data-status="disponivel">
-                            <i class="fas fa-check-circle"></i> Disponível
-                        </button>
-                        <button type="button" class="status-btn ocupado" data-status="ocupado">
-                            <i class="fas fa-user-friends"></i> Ocupado
-                        </button>
-                        <button type="button" class="status-btn manutencao" data-status="manutencao">
-                            <i class="fas fa-tools"></i> Manutenção
-                        </button>
-                    </div>
-                    <!-- CAMPO OCULTO PARA MANTER O VALOR DO STATUS -->
-                    <input type="hidden" id="editar-status" value="disponivel" required>
+                    <select id="editar-status" required>
+                        <option value="disponivel">Disponível</option>
+                        <option value="ocupado">Ocupado</option>
+                        <option value="manutencao">Manutenção</option>
+                    </select>
                 </div>
                 
                 <div id="editar-campos-ocupado">
@@ -140,36 +1137,923 @@
     </div>
     
     <script>
-        // ... (todo o JavaScript permanece igual) ...
+        // Dados iniciais - QUARTO 204 REMOVIDO e SOCCER com até 4 pessoas
+        const quartos = {
+            terreo: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            primeiro: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
+            segundo: [200, 201, 202, 203], // QUARTO 204 REMOVIDO
+            tenis: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+            soccer: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        };
         
-        // NOVAS FUNÇÕES ADICIONADAS
-        function configurarBotoesStatus() {
-            const botoesStatus = document.querySelectorAll('.status-btn');
+        let usuarios = JSON.parse(localStorage.getItem('usuariosHWT')) || [
+            { nome: "Administrador", usuario: "admin", senha: "admin123" }
+        ];
+        
+        let usuarioAtual = null;
+        let hospedesAtivos = JSON.parse(localStorage.getItem('hospedesAtivos')) || [];
+        let historico = JSON.parse(localStorage.getItem('historico')) || [];
+        let andarAtual = 'terreo';
+        let intervaloAtualizacao;
+        let ultimaAtualizacao = localStorage.getItem('ultimaAtualizacaoHWT') || null;
+
+        // 🔄 SISTEMA DE SINCRONIZAÇÃO SIMPLES ENTRE COMPUTADORES
+        function sincronizarEntreComputadores() {
+            // Usando um servidor público gratuito para sincronização
+            const url = 'https://jsonblob.com/api/jsonBlob/12345678-1234-1234-1234-123456789012';
             
-            botoesStatus.forEach(botao => {
-                botao.addEventListener('click', function() {
-                    // Remover classe active de todos os botões
-                    botoesStatus.forEach(b => b.classList.remove('active'));
+            fetch(url)
+                .then(response => response.json())
+                .then(dadosRemotos => {
+                    if (dadosRemotos && dadosRemotos.ultimaAtualizacao && 
+                        dadosRemotos.ultimaAtualizacao !== ultimaAtualizacao) {
+                        
+                        // Atualizar com dados da nuvem
+                        hospedesAtivos = dadosRemotos.hospedesAtivos || hospedesAtivos;
+                        historico = dadosRemotos.historico || historico;
+                        usuarios = dadosRemotos.usuarios || usuarios;
+                        ultimaAtualizacao = dadosRemotos.ultimaAtualizacao;
+                        
+                        salvarDados();
+                        carregarQuartos();
+                        carregarHospedesAtivos();
+                        carregarHistorico();
+                        atualizarQuantidades();
+                    }
+                })
+                .catch(error => {
+                    console.log('Modo offline - usando dados locais');
+                });
+        }
+
+        function enviarParaNuvem() {
+            const dados = {
+                hospedesAtivos: hospedesAtivos,
+                historico: historico,
+                usuarios: usuarios,
+                ultimaAtualizacao: ultimaAtualizacao
+            };
+            
+            // Enviar para servidor público
+            fetch('https://jsonblob.com/api/jsonBlob/12345678-1234-1234-1234-123456789012', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            })
+            .catch(error => {
+                console.log('Falha ao enviar para nuvem');
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar se já existe um usuário logado
+            const usuarioSalvo = localStorage.getItem('usuarioAtualHWT');
+            if (usuarioSalvo) {
+                usuarioAtual = JSON.parse(usuarioSalvo);
+                mostrarSistemaPrincipal();
+            }
+            
+            // Configurar abas de login/cadastro
+            document.querySelectorAll('.login-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
                     
-                    // Adicionar classe active ao botão clicado
+                    // Ativar aba clicada
+                    document.querySelectorAll('.login-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
                     this.classList.add('active');
                     
-                    // Atualizar o valor do campo oculto
-                    const status = this.getAttribute('data-status');
-                    document.getElementById('editar-status').value = status;
+                    // Mostrar formulário correspondente
+                    document.querySelectorAll('.login-form').forEach(form => {
+                        form.classList.remove('active');
+                    });
+                    document.getElementById(`${tabId}-form`).classList.add('active');
+                });
+            });
+            
+            // Configurar formulário de login
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                fazerLogin();
+            });
+            
+            // Configurar formulário de cadastro
+            document.getElementById('register-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                criarUsuario();
+            });
+            
+            // Configurar botão de logout
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                fazerLogout();
+            });
+            
+            // Configurar datas mínimas
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('editar-data-entrada').min = hoje;
+            document.getElementById('editar-data-saida').min = hoje;
+            
+            // Configurar mudança de status no formulário de edição
+            document.getElementById('editar-status').addEventListener('change', function() {
+                const camposOcupado = document.getElementById('editar-campos-ocupado');
+                if (this.value === 'ocupado') {
+                    camposOcupado.style.display = 'block';
+                } else {
+                    camposOcupado.style.display = 'none';
+                }
+            });
+            
+            // Configurar mudança no número de pessoas
+            document.getElementById('editar-num-pessoas').addEventListener('change', function() {
+                atualizarCamposHospedes();
+            });
+            
+            // Configurar filtros do histórico
+            document.getElementById('filtro-status').addEventListener('change', carregarHistorico);
+            document.getElementById('filtro-data-entrada').addEventListener('change', carregarHistorico);
+            document.getElementById('filtro-quarto').addEventListener('input', carregarHistorico);
+            
+            // Configurar backup
+            document.getElementById('export-btn').addEventListener('click', exportarDados);
+            document.getElementById('import-file').addEventListener('change', function(e) {
+                document.getElementById('import-btn').disabled = !e.target.files.length;
+            });
+            document.getElementById('import-btn').addEventListener('click', importarDados);
+            
+            // Carregar dados iniciais
+            carregarQuartos();
+            carregarHospedesAtivos();
+            carregarHistorico();
+            atualizarQuantidades();
+            atualizarInfoBackup();
+            
+            // Configurar navegação por abas
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.getAttribute('data-tab');
                     
-                    // Mostrar/ocultar campos de hóspedes baseado no status
-                    const camposOcupado = document.getElementById('editar-campos-ocupado');
-                    if (status === 'ocupado') {
-                        camposOcupado.style.display = 'block';
-                    } else {
-                        camposOcupado.style.display = 'none';
+                    // Esconder todas as abas
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    
+                    // Mostrar a aba selecionada
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Atualizar informações do backup se for a aba de backup
+                    if (tabId === 'backup') {
+                        atualizarInfoBackup();
                     }
+                });
+            });
+            
+            // Configurar seletor de andar
+            document.querySelectorAll('.andar-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.andar-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    andarAtual = this.getAttribute('data-andar');
+                    carregarQuartos();
+                });
+            });
+            
+            // Configurar formulário de edição
+            document.getElementById('editar-checkin-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                salvarEdicaoCheckin();
+            });
+            
+            // Configurar botão de cancelar edição
+            document.getElementById('cancelar-edicao').addEventListener('click', function() {
+                document.getElementById('modal-editar-checkin').style.display = 'none';
+            });
+            
+            // Configurar modais
+            document.querySelector('.close').addEventListener('click', function() {
+                document.getElementById('modal-quarto').style.display = 'none';
+            });
+            
+            document.querySelector('.close-editar').addEventListener('click', function() {
+                document.getElementById('modal-editar-checkin').style.display = 'none';
+            });
+            
+            // Fechar modal ao clicar fora
+            window.addEventListener('click', function(e) {
+                if (e.target === document.getElementById('modal-quarto')) {
+                    document.getElementById('modal-quarto').style.display = 'none';
+                }
+                if (e.target === document.getElementById('modal-editar-checkin')) {
+                    document.getElementById('modal-editar-checkin').style.display = 'none';
+                }
+            });
+            
+            // Iniciar sistema de sincronização
+            iniciarSincronizacao();
+        });
+
+        // Sistema de sincronização
+        function iniciarSincronizacao() {
+            // Sincronizar a cada 10 segundos
+            setInterval(sincronizarEntreComputadores, 10000);
+        }
+
+        // Função para exportar dados
+        function exportarDados() {
+            const dados = {
+                hospedesAtivos: hospedesAtivos,
+                historico: historico,
+                usuarios: usuarios,
+                ultimaAtualizacao: ultimaAtualizacao,
+                dataExportacao: new Date().toISOString(),
+                versaoSistema: '1.0'
+            };
+            
+            const dadosStr = JSON.stringify(dados, null, 2);
+            const blob = new Blob([dadosStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_hotel_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Dados exportados com sucesso!');
+        }
+
+        // Função para importar dados
+        function importarDados() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo para importar.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    // Validar estrutura básica do arquivo
+                    if (!dados.hospedesAtivos || !dados.historico || !dados.usuarios) {
+                        throw new Error('Arquivo inválido: estrutura de dados incorreta');
+                    }
+                    
+                    // Confirmar substituição
+                    if (confirm('ATENÇÃO: Isso substituirá TODOS os dados atuais do sistema. Tem certeza que deseja continuar?')) {
+                        // Substituir dados
+                        hospedesAtivos = dados.hospedesAtivos;
+                        historico = dados.historico;
+                        usuarios = dados.usuarios;
+                        ultimaAtualizacao = dados.ultimaAtualizacao || new Date().toISOString();
+                        
+                        // Salvar dados
+                        salvarDados();
+                        
+                        // Atualizar interface
+                        carregarQuartos();
+                        carregarHospedesAtivos();
+                        carregarHistorico();
+                        atualizarQuantidades();
+                        atualizarInfoBackup();
+                        
+                        // Limpar arquivo selecionado
+                        fileInput.value = '';
+                        document.getElementById('import-btn').disabled = true;
+                        
+                        document.getElementById('import-status').innerHTML = 
+                            '<div class="alert alert-success">Dados importados com sucesso!</div>';
+                        
+                        alert('Dados importados com sucesso! O sistema foi atualizado.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao importar dados:', error);
+                    document.getElementById('import-status').innerHTML = 
+                        '<div class="alert alert-error">Erro ao importar arquivo: ' + error.message + '</div>';
+                }
+            };
+            
+            reader.onerror = function() {
+                document.getElementById('import-status').innerHTML = 
+                    '<div class="alert alert-error">Erro ao ler o arquivo.</div>';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Função para atualizar informações do backup
+        function atualizarInfoBackup() {
+            document.getElementById('info-hospedes-ativos').textContent = hospedesAtivos.filter(h => h.status === 'ativo').length;
+            document.getElementById('info-historico').textContent = historico.length;
+            document.getElementById('info-usuarios').textContent = usuarios.length;
+            
+            if (ultimaAtualizacao) {
+                const data = new Date(ultimaAtualizacao);
+                document.getElementById('info-ultima-atualizacao').textContent = 
+                    data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR');
+            } else {
+                document.getElementById('info-ultima-atualizacao').textContent = 'Nunca';
+            }
+        }
+
+        // Função para atualizar campos de hóspedes dinamicamente
+        function atualizarCamposHospedes() {
+            const numPessoas = parseInt(document.getElementById('editar-num-pessoas').value);
+            const container = document.getElementById('editar-campos-hospedes');
+            container.innerHTML = '';
+            
+            // Determinar o número máximo de pessoas baseado no setor
+            const quarto = parseInt(document.getElementById('editar-quarto').value);
+            const maxPessoas = (andarAtual === 'soccer') ? 4 : 3; // SOCCER AGORA COM ATÉ 4 PESSOAS
+            
+            // Atualizar as opções disponíveis no select
+            const selectNumPessoas = document.getElementById('editar-num-pessoas');
+            selectNumPessoas.innerHTML = '';
+            
+            for (let i = 1; i <= maxPessoas; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${i} Pessoa${i > 1 ? 's' : ''}`;
+                selectNumPessoas.appendChild(option);
+            }
+            
+            // Definir o valor atual
+            selectNumPessoas.value = Math.min(numPessoas, maxPessoas);
+            
+            // Criar campos para cada hóspede
+            for (let i = 1; i <= selectNumPessoas.value; i++) {
+                const hospedeSecao = document.createElement('div');
+                hospedeSecao.className = 'hospede-secao';
+                hospedeSecao.innerHTML = `
+                    <div class="hospede-titulo">Hóspede ${i} ${i === 1 ? '(Principal)' : ''}</div>
+                    <div class="form-group">
+                        <label for="editar-nome-hospede${i}">Nome Completo</label>
+                        <input type="text" id="editar-nome-hospede${i}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-documento${i}">Documento de Identificação</label>
+                        <input type="text" id="editar-documento${i}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-telefone${i}">Telefone para Contato</label>
+                        <input type="tel" id="editar-telefone${i}" required>
+                    </div>
+                `;
+                container.appendChild(hospedeSecao);
+            }
+        }
+
+        // Função para atualizar data e hora atual
+        function atualizarDataHora() {
+            const agora = new Date();
+            
+            // Formatar data (Brasil)
+            const dataFormatada = agora.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            // Formatar hora (Brasil)
+            const horaFormatada = agora.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            // Atualizar elementos na página
+            document.getElementById('data-atual').textContent = `Data: ${dataFormatada}`;
+            document.getElementById('hora-atual').textContent = `Hora: ${horaFormatada}`;
+            
+            // Verificar se algum quarto precisa ser liberado automaticamente
+            verificarLiberacaoAutomatica();
+        }
+
+        // Função para verificar e liberar quartos automaticamente
+        function verificarLiberacaoAutomatica() {
+            const agora = new Date();
+            const dataAtual = agora.toISOString().split('T')[0];
+            const horaAtual = agora.toTimeString().split(' ')[0].substring(0, 5); // Formato HH:MM
+            
+            let quartosLiberados = false;
+            
+            console.log(`Verificando liberação automática - Data: ${dataAtual}, Hora: ${horaAtual}`);
+            
+            // Verificar cada hóspede ativo (usando índice reverso para evitar problemas ao remover)
+            for (let i = hospedesAtivos.length - 1; i >= 0; i--) {
+                const hospede = hospedesAtivos[i];
+                
+                // Pular quartos em manutenção
+                if (hospede.status === 'manutencao') continue;
+                
+                console.log(`Verificando quarto ${hospede.quarto}: Saída=${hospede.saida}, HoraSaída=${hospede.horaSaida}`);
+                
+                // Verificar se a data de saída é hoje ou anterior
+                if (hospede.saida <= dataAtual) {
+                    // Se for hoje, verificar se já passou do horário de saída
+                    if (hospede.saida === dataAtual) {
+                        if (hospede.horaSaida && horaAtual >= hospede.horaSaida) {
+                            console.log(`Liberando quarto ${hospede.quarto} - Hora de saída atingida`);
+                            // Liberar quarto automaticamente
+                            liberarQuartoAutomaticamente(hospede.quarto, i);
+                            quartosLiberados = true;
+                        }
+                    } else {
+                        // Se a data de saída já passou, liberar quarto
+                        console.log(`Liberando quarto ${hospede.quarto} - Data de saída passou`);
+                        liberarQuartoAutomaticamente(hospede.quarto, i);
+                        quartosLiberados = true;
+                    }
+                }
+            }
+            
+            // Se algum quarto foi liberado, atualizar a interface
+            if (quartosLiberados) {
+                console.log('Quartos liberados - atualizando interface');
+                carregarQuartos();
+                carregarHospedesAtivos();
+                carregarHistorico();
+                atualizarQuantidades();
+            }
+        }
+
+        // Função para liberar quarto automaticamente
+        function liberarQuartoAutomaticamente(quarto, index) {
+            const hospede = hospedesAtivos[index];
+            
+            // Atualizar o registro no histórico para marcar como finalizado
+            const registroHistorico = historico.find(h => 
+                h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+            );
+            
+            if (registroHistorico) {
+                registroHistorico.status = 'finalizado';
+                registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
+                // REMOVER a hora da saída real - apenas manter a data
+                delete registroHistorico.horaSaidaReal;
+                registroHistorico.checkoutAutomatico = true;
+                
+                console.log(`Quarto ${quarto} atualizado no histórico: status = finalizado`);
+            } else {
+                console.log(`AVISO: Não encontrou registro ativo no histórico para o quarto ${quarto}`);
+                
+                // Criar um registro no histórico se não encontrou (fallback)
+                const novoRegistroHistorico = {
+                    ...hospede,
+                    status: 'finalizado',
+                    dataSaidaReal: new Date().toISOString().split('T')[0],
+                    checkoutAutomatico: true,
+                    dataRegistro: new Date().toISOString().split('T')[0],
+                    horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                };
+                historico.unshift(novoRegistroHistorico);
+                console.log(`Criado novo registro no histórico para quarto ${quarto}`);
+            }
+            
+            // Remover dos hóspedes ativos
+            hospedesAtivos.splice(index, 1);
+            
+            // Salvar dados e notificar mudança
+            salvarDados();
+            
+            console.log(`Quarto ${quarto} liberado automaticamente - Horário de saída atingido`);
+        }
+        
+        // Função para fazer login
+        function fazerLogin() {
+            const usuario = document.getElementById('login-username').value;
+            const senha = document.getElementById('login-password').value;
+            
+            const usuarioEncontrado = usuarios.find(u => u.usuario === usuario && u.senha === senha);
+            
+            if (usuarioEncontrado) {
+                usuarioAtual = usuarioEncontrado;
+                localStorage.setItem('usuarioAtualHWT', JSON.stringify(usuarioAtual));
+                mostrarSistemaPrincipal();
+            } else {
+                alert('Usuário ou senha incorretos!');
+            }
+        }
+        
+        // Função para criar usuário
+        function criarUsuario() {
+            const nome = document.getElementById('register-name').value;
+            const usuario = document.getElementById('register-username').value;
+            const senha = document.getElementById('register-password').value;
+            const confirmarSenha = document.getElementById('register-confirm-password').value;
+            
+            // Verificar se as senhas coincidem
+            if (senha !== confirmarSenha) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+            
+            // Verificar se o usuário já existe
+            if (usuarios.find(u => u.usuario === usuario)) {
+                alert('Este nome de usuário já está em uso!');
+                return;
+            }
+            
+            // Verificar limite de usuários (máximo 4)
+            if (usuarios.length >= 4) {
+                alert('Limite máximo de 4 usuários atingido! Não é possível criar mais usuários.');
+                return;
+            }
+            
+            // Adicionar novo usuário
+            const novoUsuario = { nome, usuario, senha };
+            usuarios.push(novoUsuario);
+            localStorage.setItem('usuariosHWT', JSON.stringify(usuarios));
+            
+            alert('Usuário criado com sucesso! Faça login para continuar.');
+            
+            // Limpar formulário e voltar para a tela de login
+            document.getElementById('register-form').reset();
+            document.querySelector('.login-tab[data-tab="login"]').click();
+        }
+        
+        // Função para fazer logout
+        function fazerLogout() {
+            usuarioAtual = null;
+            localStorage.removeItem('usuarioAtualHWT');
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('main-system').style.display = 'none';
+            document.getElementById('login-form').reset();
+            
+            // Parar a atualização da data e hora
+            if (intervaloAtualizacao) {
+                clearInterval(intervaloAtualizacao);
+            }
+        }
+        
+        // Função para mostrar o sistema principal
+        function mostrarSistemaPrincipal() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-system').style.display = 'block';
+            document.getElementById('current-user').textContent = usuarioAtual.nome;
+            
+            // Iniciar atualização da data e hora
+            atualizarDataHora();
+            intervaloAtualizacao = setInterval(atualizarDataHora, 1000);
+        }
+        
+        // Função para carregar quartos na visualização
+        function carregarQuartos() {
+            const container = document.getElementById('quartos-container');
+            container.innerHTML = '';
+            
+            quartos[andarAtual].forEach(numero => {
+                const hospede = hospedesAtivos.find(h => h.quarto === numero);
+                let status = hospede ? 'ocupado' : 'disponivel';
+                const pessoasTexto = hospede ? `${hospede.numPessoas} pessoa${hospede.numPessoas > 1 ? 's' : ''}` : '';
+                
+                // Verificar se o quarto está em manutenção
+                if (hospede && hospede.status === 'manutencao') {
+                    status = 'manutencao';
+                }
+                
+                const quartoElement = document.createElement('div');
+                quartoElement.className = `quarto ${status}`;
+                quartoElement.innerHTML = `
+                    <div class="quarto-numero">${numero}</div>
+                    <div class="quarto-status">
+                        <i class="fas ${status === 'manutencao' ? 'fa-tools' : 'fa-bed'}"></i>
+                    </div>
+                    <div class="quarto-pessoas">${pessoasTexto}</div>
+                    <button class="edit-btn">Editar</button>
+                `;
+                
+                quartoElement.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('edit-btn')) {
+                        mostrarDetalhesQuarto(numero, hospede);
+                    }
+                });
+                
+                // Adicionar evento ao botão de edição
+                quartoElement.querySelector('.edit-btn').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    abrirEdicaoCheckin(numero, hospede);
+                });
+                
+                container.appendChild(quartoElement);
+            });
+            
+            atualizarQuantidades();
+        }
+        
+        // Função para carregar hóspedes ativos
+        function carregarHospedesAtivos() {
+            const tbody = document.querySelector('#tabela-hospedes tbody');
+            tbody.innerHTML = '';
+            
+            hospedesAtivos.forEach(hospede => {
+                // Pular quartos em manutenção da lista de ocupados
+                if (hospede.status === 'manutencao') return;
+                
+                const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
+                const documentosHospedes = hospede.documentos ? hospede.documentos.join(', ') : hospede.documento;
+                const telefonesHospedes = hospede.telefones ? hospede.telefones.join(', ') : hospede.telefone;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${hospede.quarto}</td>
+                    <td>${nomesHospedes}</td>
+                    <td>${documentosHospedes}</td>
+                    <td>${telefonesHospedes}</td>
+                    <td>${hospede.numPessoas}</td>
+                    <td>${formatarDataHora(hospede.entrada, hospede.horaEntrada)}</td>
+                    <td>${formatarDataHora(hospede.saida, hospede.horaSaida)}</td>
+                    <td>
+                        <button class="edit-btn" data-quarto="${hospede.quarto}">Editar</button>
+                        <button class="checkout-btn" data-quarto="${hospede.quarto}">Check-out</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            // Adicionar eventos aos botões de check-out
+            document.querySelectorAll('.checkout-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const quarto = parseInt(this.getAttribute('data-quarto'));
+                    fazerCheckout(quarto);
+                });
+            });
+            
+            // Adicionar eventos aos botões de edição
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                if (btn.getAttribute('data-quarto')) {
+                    btn.addEventListener('click', function() {
+                        const quarto = parseInt(this.getAttribute('data-quarto'));
+                        const hospede = hospedesAtivos.find(h => h.quarto === quarto);
+                        abrirEdicaoCheckin(quarto, hospede);
+                    });
+                }
+            });
+            
+            atualizarQuantidades();
+        }
+        
+        // Função para carregar histórico
+        function carregarHistorico() {
+            const container = document.getElementById('historico-accordion');
+            container.innerHTML = '';
+            
+            // Aplicar filtros
+            const filtroStatus = document.getElementById('filtro-status').value;
+            const filtroDataEntrada = document.getElementById('filtro-data-entrada').value;
+            const filtroQuarto = document.getElementById('filtro-quarto').value;
+            
+            let historicoFiltrado = [...historico];
+            
+            // Filtrar por status
+            if (filtroStatus !== 'todos') {
+                historicoFiltrado = historicoFiltrado.filter(item => {
+                    if (filtroStatus === 'ativo') return item.status === 'ativo';
+                    if (filtroStatus === 'finalizado') return item.status === 'finalizado' && !item.checkoutAutomatico;
+                    if (filtroStatus === 'automatico') return item.checkoutAutomatico;
+                    if (filtroStatus === 'manutencao') return item.status === 'manutencao';
+                    return true;
+                });
+            }
+            
+            // Filtrar por data de entrada
+            if (filtroDataEntrada) {
+                historicoFiltrado = historicoFiltrado.filter(item => item.entrada === filtroDataEntrada);
+            }
+            
+            // Filtrar por quarto
+            if (filtroQuarto) {
+                historicoFiltrado = historicoFiltrado.filter(item => item.quarto.toString().includes(filtroQuarto));
+            }
+            
+            // Ordenar histórico por data de entrada (mais recentes primeiro)
+            historicoFiltrado.sort((a, b) => {
+                const dataA = new Date(a.dataRegistro || a.entrada);
+                const dataB = new Date(b.dataRegistro || b.entrada);
+                return dataB - dataA;
+            });
+            
+            if (historicoFiltrado.length === 0) {
+                container.innerHTML = `
+                    <div class="historico-vazio">
+                        <i class="fas fa-history" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <p>Nenhum registro encontrado com os filtros aplicados</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            historicoFiltrado.forEach((estadia, index) => {
+                const nomesHospedes = estadia.nomes ? estadia.nomes.join(', ') : estadia.nome;
+                const documentosHospedes = estadia.documentos ? estadia.documentos.join(', ') : estadia.documento;
+                const telefonesHospedes = estadia.telefones ? estadia.telefones.join(', ') : estadia.telefone;
+                
+                // Determinar status e cor
+                let statusTexto = 'Finalizado';
+                let statusClasse = 'status-finalizado';
+                
+                if (estadia.status === 'ativo') {
+                    statusTexto = 'Ativo';
+                    statusClasse = 'status-ativo';
+                } else if (estadia.checkoutAutomatico) {
+                    statusTexto = 'Auto Finalizado';
+                    statusClasse = 'status-automatico';
+                } else if (estadia.status === 'manutencao') {
+                    statusTexto = 'Manutenção';
+                    statusClasse = 'status-manutencao';
+                }
+                
+                const item = document.createElement('div');
+                item.className = 'historico-item';
+                item.innerHTML = `
+                    <div class="historico-header" data-index="${index}">
+                        <div class="historico-info">
+                            <div class="historico-info-item">
+                                <span class="historico-info-label">Quarto</span>
+                                <span class="historico-info-value">${estadia.quarto}</span>
+                            </div>
+                            <div class="historico-info-item">
+                                <span class="historico-info-label">Hóspedes</span>
+                                <span class="historico-info-value">${nomesHospedes}</span>
+                            </div>
+                            <div class="historico-info-item">
+                                <span class="historico-info-label">Entrada</span>
+                                <span class="historico-info-value">${formatarData(estadia.entrada)}</span>
+                            </div>
+                            <div class="historico-info-item">
+                                <span class="historico-info-label">Status</span>
+                                <span class="historico-info-value"><span class="status-historico ${statusClasse}">${statusTexto}</span></span>
+                            </div>
+                        </div>
+                        <div class="historico-actions">
+                            <button class="btn-detalhes" data-index="${index}">
+                                <i class="fas fa-bee"></i> Detalhes
+                            </button>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="historico-detalhes" data-index="${index}">
+                        <div class="detalhes-grid">
+                            <div class="detalhes-item">
+                                <div class="detalhes-label">Quarto</div>
+                                <div class="detalhes-value">${estadia.quarto}</div>
+                            </div>
+                            <div class="detalhes-item">
+                                <div class="detalhes-label">Número de Pessoas</div>
+                                <div class="detalhes-value">${estadia.numPessoas}</div>
+                            </div>
+                            <div class="detalhes-item">
+                                <div class="detalhes-label">Data/Hora de Entrada</div>
+                                <div class="detalhes-value">${formatarDataHora(estadia.entrada, estadia.horaEntrada)}</div>
+                            </div>
+                            <div class="detalhes-item">
+                                <div class="detalhes-label">Data/Hora de Saída Prevista</div>
+                                <div class="detalhes-value">${formatarDataHora(estadia.saida, estadia.horaSaida)}</div>
+                            </div>
+                            <div class="detalhes-item">
+                                <div class="detalhes-label">Status</div>
+                                <div class="detalhes-value"><span class="status-historico ${statusClasse}">${statusTexto}</span></div>
+                            </div>
+                        </div>
+                        
+                        ${estadia.status !== 'manutencao' ? `
+                        <div style="margin-top: 20px;">
+                            <div class="hospede-titulo">Hóspedes</div>
+                            <div class="detalhes-grid">
+                                ${estadia.nomes ? estadia.nomes.map((nome, i) => `
+                                    <div class="hospede-info">
+                                        <div class="hospede-info-label">Hóspede ${i+1}</div>
+                                        <div class="detalhes-value">
+                                            <strong>Nome:</strong> ${nome}<br>
+                                            <strong>Documento:</strong> ${estadia.documentos ? estadia.documentos[i] : 'Não informado'}<br>
+                                            <strong>Telefone:</strong> ${estadia.telefones ? estadia.telefones[i] : 'Não informado'}
+                                        </div>
+                                    </div>
+                                `).join('') : `
+                                    <div class="hospede-info">
+                                        <div class="hospede-info-label">Hóspede Principal</div>
+                                        <div class="detalhes-value">
+                                            <strong>Nome:</strong> ${estadia.nome || 'Não informado'}<br>
+                                            <strong>Documento:</strong> ${estadia.documento || 'Não informado'}<br>
+                                            <strong>Telefone:</strong> ${estadia.telefone || 'Não informado'}
+                                        </div>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                        ` : `
+                        <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 6px;">
+                            <i class="fas fa-tools" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                            <h4 style="margin-bottom: 10px;">Quarto em Manutenção</h4>
+                            <p>Este quarto está temporariamente indisponível para reservas devido a manutenção.</p>
+                        </div>
+                        `}
+                        
+                        ${estadia.observacao ? `
+                        <div class="observacao-box">
+                            <div class="observacao-label">Observação:</div>
+                            <div class="observacao-text">${estadia.observacao}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${estadia.checkoutAutomatico ? `
+                        <div style="margin-top: 20px; padding: 10px; background-color: #fff3cd; border-radius: 4px;">
+                            <i class="fas fa-info-circle"></i> Este check-out foi realizado automaticamente pelo sistema.
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+            
+            // Adicionar eventos para abrir/fechar os detalhes
+            document.querySelectorAll('.historico-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const detalhes = document.querySelector(`.historico-detalhes[data-index="${index}"]`);
+                    const toggleIcon = this.querySelector('.toggle-icon');
+                    const btnDetalhes = this.querySelector('.btn-detalhes');
+                    
+                    // Fechar todos os outros itens abertos
+                    document.querySelectorAll('.historico-detalhes').forEach(d => {
+                        if (d !== detalhes) {
+                            d.classList.remove('active');
+                            const otherHeader = d.parentElement.querySelector('.historico-header');
+                            otherHeader.classList.remove('active');
+                            otherHeader.querySelector('.toggle-icon').classList.remove('aberto');
+                            otherHeader.querySelector('.btn-detalhes').classList.remove('aberto');
+                        }
+                    });
+                    
+                    // Alternar o item atual
+                    detalhes.classList.toggle('active');
+                    this.classList.toggle('active');
+                    toggleIcon.classList.toggle('aberto');
+                    btnDetalhes.classList.toggle('aberto');
+                });
+            });
+            
+            // Adicionar eventos aos botões de detalhes
+            document.querySelectorAll('.btn-detalhes').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const index = this.getAttribute('data-index');
+                    const header = document.querySelector(`.historico-header[data-index="${index}"]`);
+                    header.click();
                 });
             });
         }
         
-        // MODIFICAÇÃO NA FUNÇÃO abrirEdicaoCheckin
+        // Função para fazer check-out
+        function fazerCheckout(quarto) {
+            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+            
+            if (hospedeIndex !== -1) {
+                const hospede = hospedesAtivos[hospedeIndex];
+                
+                // Atualizar o registro no histórico para marcar como finalizado
+                const registroHistorico = historico.find(h => 
+                    h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+                );
+                
+                if (registroHistorico) {
+                    registroHistorico.status = 'finalizado';
+                    registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
+                    // REMOVER a hora da saída real - apenas manter a data
+                    delete registroHistorico.horaSaidaReal;
+                }
+                
+                // Remover dos hóspedes ativos
+                hospedesAtivos.splice(hospedeIndex, 1);
+                
+                salvarDados();
+                
+                // Atualizar visualizações
+                carregarQuartos();
+                carregarHospedesAtivos();
+                carregarHistorico();
+                
+                alert(`Check-out do quarto ${quarto} realizado com sucesso!`);
+            }
+        }
+        
+        // Função para abrir edição de check-in
         function abrirEdicaoCheckin(quarto, hospede) {
             const modal = document.getElementById('modal-editar-checkin');
             const titulo = document.getElementById('modal-editar-titulo');
@@ -177,27 +2061,12 @@
             
             titulo.textContent = `Editar Quarto ${quarto}`;
             
-            // Configurar os botões de status
-            configurarBotoesStatus();
-            
             // Preencher formulário com dados existentes, se houver
             document.getElementById('editar-quarto').value = quarto;
             
             if (hospede) {
-                // Definir status atual
-                const status = hospede.status || 'ocupado';
-                document.getElementById('editar-status').value = status;
-                
-                // Ativar o botão correspondente
-                const botoesStatus = document.querySelectorAll('.status-btn');
-                botoesStatus.forEach(botao => {
-                    botao.classList.remove('active');
-                    if (botao.getAttribute('data-status') === status) {
-                        botao.classList.add('active');
-                    }
-                });
-                
-                if (status === 'manutencao') {
+                document.getElementById('editar-status').value = hospede.status || 'ocupado';
+                if (hospede.status === 'manutencao') {
                     camposOcupado.style.display = 'none';
                 } else {
                     camposOcupado.style.display = 'block';
@@ -235,7 +2104,6 @@
                     }
                 }
             } else {
-                // Status padrão para quarto vazio
                 document.getElementById('editar-status').value = 'disponivel';
                 camposOcupado.style.display = 'none';
                 
@@ -261,7 +2129,337 @@
             modal.style.display = 'flex';
         }
         
-        // ... (restante do JavaScript permanece igual) ...
+        // Função para salvar edição de check-in
+        function salvarEdicaoCheckin() {
+            const quarto = parseInt(document.getElementById('editar-quarto').value);
+            const status = document.getElementById('editar-status').value;
+            const observacao = document.getElementById('editar-observacao').value;
+            
+            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+            
+            if (status === 'ocupado') {
+                const numPessoas = parseInt(document.getElementById('editar-num-pessoas').value);
+                const entrada = document.getElementById('editar-data-entrada').value;
+                const saida = document.getElementById('editar-data-saida').value;
+                const horaEntrada = document.getElementById('editar-hora-entrada').value;
+                const horaSaida = document.getElementById('editar-hora-saida').value;
+                
+                // Validar se a data de saída não é anterior à data de entrada
+                if (new Date(saida) < new Date(entrada)) {
+                    alert('A data de saída não pode ser anterior à data de entrada');
+                    return;
+                }
+                
+                // Coletar dados dos hóspedes
+                const nomes = [];
+                const documentos = [];
+                const telefones = [];
+                
+                for (let i = 1; i <= numPessoas; i++) {
+                    const nome = document.getElementById(`editar-nome-hospede${i}`).value;
+                    const documento = document.getElementById(`editar-documento${i}`).value;
+                    const telefone = document.getElementById(`editar-telefone${i}`).value;
+                    
+                    if (!nome || !documento || !telefone) {
+                        alert(`Por favor, preencha todos os dados do Hóspede ${i}`);
+                        return;
+                    }
+                    
+                    nomes.push(nome);
+                    documentos.push(documento);
+                    telefones.push(telefone);
+                }
+                
+                // Atualizar ou adicionar hóspede
+                const hospede = {
+                    quarto,
+                    numPessoas,
+                    nomes,
+                    documentos,
+                    telefones,
+                    entrada,
+                    saida,
+                    horaEntrada,
+                    horaSaida,
+                    observacao, // GARANTIR que a observação seja salva
+                    status: 'ativo'
+                };
+                
+                if (hospedeIndex !== -1) {
+                    // Atualizar hóspede existente
+                    hospedesAtivos[hospedeIndex] = hospede;
+                    
+                    // Atualizar também no histórico se existir
+                    const registroHistorico = historico.find(h => 
+                        h.quarto === quarto && (h.status === 'ativo' || h.status === 'manutencao') && !h.dataSaidaReal
+                    );
+                    if (registroHistorico) {
+                        Object.assign(registroHistorico, hospede);
+                        registroHistorico.status = 'ativo';
+                        // GARANTIR que a observação seja atualizada no histórico também
+                        registroHistorico.observacao = observacao;
+                    }
+                } else {
+                    // Adicionar novo hóspede
+                    hospedesAtivos.push(hospede);
+                    
+                    // Registrar automaticamente no histórico
+                    const registroHistorico = {
+                        ...hospede,
+                        status: 'ativo',
+                        dataRegistro: new Date().toISOString().split('T')[0],
+                        horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                    };
+                    historico.unshift(registroHistorico);
+                }
+            } else if (status === 'manutencao') {
+                // Marcar quarto como em manutenção
+                const hospede = {
+                    quarto,
+                    status: 'manutencao',
+                    observacao, // GARANTIR que a observação seja salva
+                    dataRegistro: new Date().toISOString().split('T')[0]
+                };
+                
+                if (hospedeIndex !== -1) {
+                    // Atualizar hóspede existente para manutenção
+                    hospedesAtivos[hospedeIndex] = hospede;
+                    
+                    // Atualizar também no histórico
+                    const registroHistorico = historico.find(h => 
+                        h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+                    );
+                    if (registroHistorico) {
+                        registroHistorico.status = 'manutencao';
+                        registroHistorico.observacao = observacao;
+                    }
+                } else {
+                    // Adicionar novo registro de manutenção
+                    hospedesAtivos.push(hospede);
+                    
+                    // Registrar no histórico
+                    const registroHistorico = {
+                        ...hospede,
+                        dataRegistro: new Date().toISOString().split('T')[0],
+                        horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                    };
+                    historico.unshift(registroHistorico);
+                }
+            } else {
+                // Remover hóspede se existir (status = disponivel)
+                if (hospedeIndex !== -1) {
+                    const hospede = hospedesAtivos[hospedeIndex];
+                    
+                    // Se estava ocupado, marcar como finalizado no histórico
+                    if (hospede.status === 'ativo') {
+                        const registroHistorico = historico.find(h => 
+                            h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+                        );
+                        if (registroHistorico) {
+                            registroHistorico.status = 'finalizado';
+                            registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
+                            // REMOVER a hora da saída real
+                            delete registroHistorico.horaSaidaReal;
+                        }
+                    }
+                    
+                    hospedesAtivos.splice(hospedeIndex, 1);
+                }
+            }
+            
+            salvarDados();
+            
+            // Fechar modal
+            document.getElementById('modal-editar-checkin').style.display = 'none';
+            
+            // Atualizar visualizações
+            carregarQuartos();
+            carregarHospedesAtivos();
+            carregarHistorico();
+            
+            // Mostrar mensagem de sucesso
+            alert('Alterações salvas com sucesso!');
+        }
+        
+        // Função para mostrar detalhes do quarto
+        function mostrarDetalhesQuarto(quarto, hospede) {
+            const modal = document.getElementById('modal-quarto');
+            const titulo = document.getElementById('modal-titulo');
+            const conteudo = document.getElementById('modal-conteudo');
+            
+            titulo.textContent = `Quarto ${quarto}`;
+            
+            if (hospede) {
+                if (hospede.status === 'manutencao') {
+                    conteudo.innerHTML = `
+                        <div class="status-indicator">
+                            <div class="status-dot manutencao"></div>
+                            <span>Manutenção</span>
+                        </div>
+                        <p><strong>Status:</strong> Em manutenção</p>
+                        <p><strong>Data do registro:</strong> ${formatarData(hospede.dataRegistro)}</p>
+                        ${hospede.observacao ? `
+                        <div class="observacao-box">
+                            <div class="observacao-label">Observação:</div>
+                            <div class="observacao-text">${hospede.observacao}</div>
+                        </div>
+                        ` : ''}
+                        <button class="edit-btn" style="margin-top: 15px;">Editar Status</button>
+                        <button class="manutencao-btn" style="margin-top: 10px;">Liberar Manutenção</button>
+                    `;
+                } else {
+                    const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
+                    const documentosHospedes = hospede.documentos ? hospede.documentos.join(', ') : hospede.documento;
+                    const telefonesHospedes = hospede.telefones ? hospede.telefones.join(', ') : hospede.telefone;
+                    
+                    conteudo.innerHTML = `
+                        <div class="status-indicator">
+                            <div class="status-dot ocupado"></div>
+                            <span>Ocupado</span>
+                        </div>
+                        <p><strong>Hóspedes:</strong> ${nomesHospedes}</p>
+                        <p><strong>Documentos:</strong> ${documentosHospedes}</p>
+                        <p><strong>Telefones:</strong> ${telefonesHospedes}</p>
+                        <p><strong>Número de pessoas:</strong> ${hospede.numPessoas}</p>
+                        <p><strong>Entrada:</strong> ${formatarDataHora(hospede.entrada, hospede.horaEntrada)}</p>
+                        <p><strong>Saída prevista:</strong> ${formatarDataHora(hospede.saida, hospede.horaSaida)}</p>
+                        ${hospede.observacao ? `
+                        <div class="observacao-box">
+                            <div class="observacao-label">Observação:</div>
+                            <div class="observacao-text">${hospede.observacao}</div>
+                        </div>
+                        ` : ''}
+                        <button class="edit-btn" style="margin-top: 15px;">Editar Check-in</button>
+                        <button class="checkout-btn" style="margin-top: 10px;">Fazer Check-out</button>
+                        <button class="manutencao-btn" style="margin-top: 5px;">Colocar em Manutenção</button>
+                    `;
+                    
+                    // Adicionar evento ao botão de check-out
+                    conteudo.querySelector('.checkout-btn').addEventListener('click', function() {
+                        fazerCheckout(quarto);
+                        modal.style.display = 'none';
+                    });
+                }
+                
+                // Adicionar evento ao botão de edição
+                conteudo.querySelector('.edit-btn').addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    abrirEdicaoCheckin(quarto, hospede);
+                });
+                
+                // Adicionar evento ao botão de manutenção
+                const manutencaoBtn = conteudo.querySelector('.manutencao-btn');
+                if (manutencaoBtn) {
+                    manutencaoBtn.addEventListener('click', function() {
+                        if (this.textContent === 'Colocar em Manutenção') {
+                            // Colocar em manutenção
+                            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+                            if (hospedeIndex !== -1) {
+                                hospedesAtivos[hospedeIndex].status = 'manutencao';
+                                salvarDados();
+                                carregarQuartos();
+                                carregarHospedesAtivos();
+                                alert(`Quarto ${quarto} colocado em manutenção!`);
+                            }
+                        } else {
+                            // Liberar da manutenção
+                            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+                            if (hospedeIndex !== -1) {
+                                hospedesAtivos.splice(hospedeIndex, 1);
+                                salvarDados();
+                                carregarQuartos();
+                                carregarHospedesAtivos();
+                                alert(`Quarto ${quarto} liberado da manutenção!`);
+                            }
+                        }
+                        modal.style.display = 'none';
+                    });
+                }
+            } else {
+                conteudo.innerHTML = `
+                    <div class="status-indicator">
+                        <div class="status-dot disponivel"></div>
+                        <span>Disponível</span>
+                    </div>
+                    <p>Este quarto está disponível para reserva.</p>
+                    <button class="edit-btn" style="margin-top: 15px;" onclick="document.getElementById('modal-quarto').style.display = 'none'; abrirEdicaoCheckin(${quarto}, null);">Fazer Check-in</button>
+                    <button class="manutencao-btn" style="margin-top: 10px;" onclick="colocarEmManutencao(${quarto})">Colocar em Manutenção</button>
+                `;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        // Função para colocar quarto em manutenção diretamente
+        function colocarEmManutencao(quarto) {
+            const hospede = {
+                quarto,
+                status: 'manutencao',
+                dataRegistro: new Date().toISOString().split('T')[0]
+            };
+            
+            hospedesAtivos.push(hospede);
+            
+            // Registrar no histórico
+            const registroHistorico = {
+                ...hospede,
+                dataRegistro: new Date().toISOString().split('T')[0],
+                horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+            };
+            historico.unshift(registroHistorico);
+            
+            salvarDados();
+            carregarQuartos();
+            document.getElementById('modal-quarto').style.display = 'none';
+            alert(`Quarto ${quarto} colocado em manutenção!`);
+        }
+        
+        // Função para atualizar quantidades
+        function atualizarQuantidades() {
+            const totalQuartos = quartos.terreo.length + quartos.primeiro.length + quartos.segundo.length + 
+                                quartos.tenis.length + quartos.soccer.length;
+            const quartosOcupados = hospedesAtivos.filter(h => h.status === 'ativo').length;
+            
+            document.getElementById('quantidade-quartos').textContent = totalQuartos;
+            document.getElementById('quantidade-hospedes').textContent = quartosOcupados;
+        }
+        
+        // Função para formatar apenas a data (sem hora)
+        function formatarData(dataString) {
+            if (!dataString) return '';
+            
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR');
+        }
+        
+        // Função para formatar data e hora
+        function formatarDataHora(dataString, horaString) {
+            if (!dataString) return '';
+            
+            const data = new Date(dataString);
+            const dataFormatada = data.toLocaleDateString('pt-BR');
+            
+            if (horaString) {
+                return `${dataFormatada} às ${horaString}`;
+            }
+            
+            return dataFormatada;
+        }
+        
+        // Função para salvar dados no localStorage
+        function salvarDados() {
+            localStorage.setItem('hospedesAtivos', JSON.stringify(hospedesAtivos));
+            localStorage.setItem('historico', JSON.stringify(historico));
+            localStorage.setItem('usuariosHWT', JSON.stringify(usuarios));
+            
+            // Marcar a última atualização para sincronização
+            const timestamp = new Date().toISOString();
+            localStorage.setItem('ultimaAtualizacaoHWT', timestamp);
+            ultimaAtualizacao = timestamp;
+            
+            // Tentar enviar para nuvem
+            enviarParaNuvem();
+        }
     </script>
 </body>
 </html>
