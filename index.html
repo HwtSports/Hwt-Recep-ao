@@ -19,6 +19,7 @@
             --vermelho: #F44336;
             --azul: #2196F3;
             --amarelo: #FFC107;
+            --preto: #000000;
         }
         
         * {
@@ -280,8 +281,9 @@
         }
         
         .quarto.manutencao {
-            background-color: #fff3cd;
-            border-color: var(--amarelo);
+            background-color: #2c2c2c;
+            border-color: var(--preto);
+            color: var(--branco);
         }
         
         .quarto:hover {
@@ -293,6 +295,10 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 10px;
+        }
+        
+        .quarto.manutencao .quarto-numero {
+            color: var(--branco);
         }
         
         .quarto-status {
@@ -316,6 +322,10 @@
             font-size: 0.9rem;
             color: var(--cinza);
             margin-bottom: 10px;
+        }
+        
+        .quarto.manutencao .quarto-pessoas {
+            color: var(--branco);
         }
         
         table {
