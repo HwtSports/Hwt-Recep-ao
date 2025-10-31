@@ -764,6 +764,59 @@
             resize: vertical;
             min-height: 80px;
         }
+
+        .backup-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--cinza-claro);
+            border-radius: 8px;
+            border-left: 4px solid var(--laranja);
+        }
+        
+        .backup-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--cinza);
+        }
+        
+        .backup-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .backup-btn {
+            background-color: var(--azul);
+            width: auto;
+            padding: 10px 20px;
+        }
+        
+        .backup-btn.export {
+            background-color: var(--verde);
+        }
+        
+        .backup-btn.import {
+            background-color: var(--laranja);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--laranja);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .file-label:hover {
+            background-color: var(--laranja-escuro);
+        }
         
         @media (max-width: 768px) {
             .container {
@@ -789,6 +842,10 @@
             }
             
             .historico-filtros {
+                flex-direction: column;
+            }
+            
+            .backup-buttons {
                 flex-direction: column;
             }
         }
@@ -868,6 +925,7 @@
                 <li><a href="#" class="nav-link" data-tab="quartos">Quartos <span id="quantidade-quartos" class="quantidade-info">0</span></a></li>
                 <li><a href="#" class="nav-link" data-tab="ocupados">Ocupados <span id="quantidade-hospedes" class="quantidade-info">0</span></a></li>
                 <li><a href="#" class="nav-link" data-tab="historico">Histórico</a></li>
+                <li><a href="#" class="nav-link" data-tab="backup">Backup</a></li>
             </ul>
         </nav>
         
@@ -941,6 +999,45 @@
             
             <div class="historico-accordion" id="historico-accordion">
                 <!-- Histórico será carregado aqui via JavaScript -->
+            </div>
+        </div>
+
+        <div id="backup" class="tab-content">
+            <h2 class="page-title">Backup de Dados</h2>
+            
+            <div class="backup-section">
+                <h3 class="backup-title">Exportar Dados</h3>
+                <p>Exporte todos os dados do sistema para um arquivo JSON que pode ser usado em outro computador.</p>
+                <div class="backup-buttons">
+                    <button class="backup-btn export" id="export-btn">
+                        <i class="fas fa-download"></i> Exportar Dados
+                    </button>
+                </div>
+            </div>
+            
+            <div class="backup-section">
+                <h3 class="backup-title">Importar Dados</h3>
+                <p>Importe dados de um arquivo JSON para substituir todos os dados atuais do sistema.</p>
+                <div class="backup-buttons">
+                    <label for="import-file" class="file-label">
+                        <i class="fas fa-upload"></i> Selecionar Arquivo
+                    </label>
+                    <input type="file" id="import-file" accept=".json" class="file-input">
+                    <button class="backup-btn import" id="import-btn" disabled>
+                        <i class="fas fa-file-import"></i> Importar Dados
+                    </button>
+                </div>
+                <div id="import-status" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="backup-section">
+                <h3 class="backup-title">Informações do Sistema</h3>
+                <div class="info-box">
+                    <p><strong>Total de Hóspedes Ativos:</strong> <span id="info-hospedes-ativos">0</span></p>
+                    <p><strong>Total no Histórico:</strong> <span id="info-historico">0</span> registros</p>
+                    <p><strong>Total de Usuários:</strong> <span id="info-usuarios">0</span></p>
+                    <p><strong>Última Atualização:</strong> <span id="info-ultima-atualizacao">-</span></p>
+                </div>
             </div>
         </div>
     </div>
@@ -1170,11 +1267,19 @@
             document.getElementById('filtro-data-entrada').addEventListener('change', carregarHistorico);
             document.getElementById('filtro-quarto').addEventListener('input', carregarHistorico);
             
+            // Configurar backup
+            document.getElementById('export-btn').addEventListener('click', exportarDados);
+            document.getElementById('import-file').addEventListener('change', function(e) {
+                document.getElementById('import-btn').disabled = !e.target.files.length;
+            });
+            document.getElementById('import-btn').addEventListener('click', importarDados);
+            
             // Carregar dados iniciais
             carregarQuartos();
             carregarHospedesAtivos();
             carregarHistorico();
             atualizarQuantidades();
+            atualizarInfoBackup();
             
             // Configurar navegação por abas
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -1189,6 +1294,11 @@
                     
                     // Mostrar a aba selecionada
                     document.getElementById(tabId).classList.add('active');
+                    
+                    // Atualizar informações do backup se for a aba de backup
+                    if (tabId === 'backup') {
+                        atualizarInfoBackup();
+                    }
                 });
             });
             
@@ -1242,6 +1352,110 @@
         function iniciarSincronizacao() {
             // Sincronizar a cada 10 segundos
             setInterval(sincronizarEntreComputadores, 10000);
+        }
+
+        // Função para exportar dados
+        function exportarDados() {
+            const dados = {
+                hospedesAtivos: hospedesAtivos,
+                historico: historico,
+                usuarios: usuarios,
+                ultimaAtualizacao: ultimaAtualizacao,
+                dataExportacao: new Date().toISOString(),
+                versaoSistema: '1.0'
+            };
+            
+            const dadosStr = JSON.stringify(dados, null, 2);
+            const blob = new Blob([dadosStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_hotel_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Dados exportados com sucesso!');
+        }
+
+        // Função para importar dados
+        function importarDados() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo para importar.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    // Validar estrutura básica do arquivo
+                    if (!dados.hospedesAtivos || !dados.historico || !dados.usuarios) {
+                        throw new Error('Arquivo inválido: estrutura de dados incorreta');
+                    }
+                    
+                    // Confirmar substituição
+                    if (confirm('ATENÇÃO: Isso substituirá TODOS os dados atuais do sistema. Tem certeza que deseja continuar?')) {
+                        // Substituir dados
+                        hospedesAtivos = dados.hospedesAtivos;
+                        historico = dados.historico;
+                        usuarios = dados.usuarios;
+                        ultimaAtualizacao = dados.ultimaAtualizacao || new Date().toISOString();
+                        
+                        // Salvar dados
+                        salvarDados();
+                        
+                        // Atualizar interface
+                        carregarQuartos();
+                        carregarHospedesAtivos();
+                        carregarHistorico();
+                        atualizarQuantidades();
+                        atualizarInfoBackup();
+                        
+                        // Limpar arquivo selecionado
+                        fileInput.value = '';
+                        document.getElementById('import-btn').disabled = true;
+                        
+                        document.getElementById('import-status').innerHTML = 
+                            '<div class="alert alert-success">Dados importados com sucesso!</div>';
+                        
+                        alert('Dados importados com sucesso! O sistema foi atualizado.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao importar dados:', error);
+                    document.getElementById('import-status').innerHTML = 
+                        '<div class="alert alert-error">Erro ao importar arquivo: ' + error.message + '</div>';
+                }
+            };
+            
+            reader.onerror = function() {
+                document.getElementById('import-status').innerHTML = 
+                    '<div class="alert alert-error">Erro ao ler o arquivo.</div>';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Função para atualizar informações do backup
+        function atualizarInfoBackup() {
+            document.getElementById('info-hospedes-ativos').textContent = hospedesAtivos.filter(h => h.status === 'ativo').length;
+            document.getElementById('info-historico').textContent = historico.length;
+            document.getElementById('info-usuarios').textContent = usuarios.length;
+            
+            if (ultimaAtualizacao) {
+                const data = new Date(ultimaAtualizacao);
+                document.getElementById('info-ultima-atualizacao').textContent = 
+                    data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR');
+            } else {
+                document.getElementById('info-ultima-atualizacao').textContent = 'Nunca';
+            }
         }
 
         // Função para atualizar campos de hóspedes dinamicamente
@@ -1701,12 +1915,6 @@
                                 <div class="detalhes-label">Data/Hora de Saída Prevista</div>
                                 <div class="detalhes-value">${formatarDataHora(estadia.saida, estadia.horaSaida)}</div>
                             </div>
-                            ${estadia.dataSaidaReal ? `
-                            <div class="detalhes-item">
-                                <div class="detalhes-label">Data de Saída Real</div>
-                                <div class="detalhes-value">${formatarData(estadia.dataSaidaReal)}</div>
-                            </div>
-                            ` : ''}
                             <div class="detalhes-item">
                                 <div class="detalhes-label">Status</div>
                                 <div class="detalhes-value"><span class="status-historico ${statusClasse}">${statusTexto}</span></div>
