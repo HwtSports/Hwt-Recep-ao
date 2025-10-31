@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recepção HWT - Sistema Hoteleiro Sincronizado</title>
-    <meta name="description" content="Sistema gratuito de gestão hoteleira para pequenos hotéis e pousadas com sincronização em tempo real">
+    <title>Recepção HWT - Sistema Hoteleiro</title>
+    <meta name="description" content="Sistema gratuito de gestão hoteleira para pequenos hotéis e pousadas">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -18,6 +18,7 @@
             --verde: #4CAF50;
             --vermelho: #F44336;
             --azul: #2196F3;
+            --amarelo: #FFC107;
         }
         
         * {
@@ -120,7 +121,7 @@
             color: var(--cinza);
         }
         
-        input, select, button {
+        input, select, button, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid var(--cinza-medio);
@@ -128,7 +129,7 @@
             font-size: 1rem;
         }
         
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--laranja);
             box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
@@ -278,6 +279,11 @@
             border-color: var(--vermelho);
         }
         
+        .quarto.manutencao {
+            background-color: #fff3cd;
+            border-color: var(--amarelo);
+        }
+        
         .quarto:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -300,6 +306,10 @@
         
         .quarto.ocupado .quarto-status {
             color: var(--vermelho);
+        }
+        
+        .quarto.manutencao .quarto-status {
+            color: var(--amarelo);
         }
         
         .quarto-pessoas {
@@ -397,6 +407,19 @@
             background-color: #d32f2f;
         }
         
+        .manutencao-btn {
+            background-color: var(--amarelo);
+            color: var(--cinza);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .manutencao-btn:hover {
+            background-color: #e0a800;
+        }
+        
         .andar-selector {
             display: flex;
             justify-content: center;
@@ -479,6 +502,10 @@
             background-color: var(--vermelho);
         }
         
+        .status-dot.manutencao {
+            background-color: var(--amarelo);
+        }
+        
         .hospede-secao {
             margin-bottom: 20px;
             padding: 15px;
@@ -541,6 +568,11 @@
         .status-automatico {
             background-color: var(--laranja);
             color: white;
+        }
+        
+        .status-manutencao {
+            background-color: var(--amarelo);
+            color: var(--cinza);
         }
         
         /* Estilos para o histórico com abas */
@@ -706,47 +738,31 @@
             font-size: 0.9rem;
             text-align: center;
         }
+
+        .observacao-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--laranja);
+        }
         
-        .sync-indicator {
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
+        .observacao-label {
+            font-weight: bold;
+            margin-bottom: 8px;
             color: var(--cinza);
-            margin-left: 15px;
         }
         
-        .sync-status {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 5px;
+        .observacao-text {
+            font-style: italic;
+            color: #666;
+            white-space: pre-wrap;
+            line-height: 1.4;
         }
         
-        .sync-online {
-            background-color: var(--verde);
-        }
-        
-        .sync-offline {
-            background-color: var(--vermelho);
-        }
-        
-        .sync-pending {
-            background-color: var(--laranja);
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .last-update {
-            font-size: 0.8rem;
-            color: var(--cinza);
-            margin-top: 5px;
-            text-align: right;
+        textarea {
+            resize: vertical;
+            min-height: 80px;
         }
         
         @media (max-width: 768px) {
@@ -785,7 +801,7 @@
             <div class="login-logo">
                 <span class="logo-hwt">Recepção HWT</span>
             </div>
-            <div class="login-subtitle">Sistema de Gestão Hoteleira Sincronizado</div>
+            <div class="login-subtitle">Sistema de Gestão Hoteleira</div>
             
             <div class="login-tabs">
                 <button class="login-tab active" data-tab="login">Entrar</button>
@@ -843,10 +859,6 @@
             </div>
             <div class="user-info">
                 <span class="user-name">Olá, <span id="current-user">Usuário</span></span>
-                <div class="sync-indicator">
-                    <span class="sync-status sync-online" id="sync-status"></span>
-                    <span id="sync-text">Sincronizado</span>
-                </div>
                 <button class="logout-btn" id="logout-btn">Sair</button>
             </div>
         </header>
@@ -858,10 +870,6 @@
                 <li><a href="#" class="nav-link" data-tab="historico">Histórico</a></li>
             </ul>
         </nav>
-        
-        <div class="last-update" id="last-update">
-            Última atualização: <span id="last-update-time">--:--:--</span>
-        </div>
         
         <div id="quartos" class="tab-content active">
             <h2 class="page-title">Quartos</h2>
@@ -916,6 +924,7 @@
                         <option value="ativo">Ativos</option>
                         <option value="finalizado">Finalizados</option>
                         <option value="automatico">Auto Finalizados</option>
+                        <option value="manutencao">Manutenção</option>
                     </select>
                 </div>
                 
@@ -964,6 +973,7 @@
                     <select id="editar-status" required>
                         <option value="disponivel">Disponível</option>
                         <option value="ocupado">Ocupado</option>
+                        <option value="manutencao">Manutenção</option>
                     </select>
                 </div>
                 
@@ -974,6 +984,7 @@
                             <option value="1">1 Pessoa</option>
                             <option value="2">2 Pessoas</option>
                             <option value="3">3 Pessoas</option>
+                            <option value="4">4 Pessoas</option>
                         </select>
                     </div>
                     
@@ -1004,6 +1015,12 @@
                             <input type="time" id="editar-hora-saida" required>
                         </div>
                     </div>
+
+                    <!-- Campo de observação - APENAS UMA ABA -->
+                    <div class="form-group">
+                        <label for="editar-observacao">Observação (Opcional)</label>
+                        <textarea id="editar-observacao" placeholder="Digite alguma observação se necessário..."></textarea>
+                    </div>
                 </div>
                 
                 <button type="submit">Salvar Alterações</button>
@@ -1013,11 +1030,11 @@
     </div>
     
     <script>
-        // Dados iniciais
+        // Dados iniciais - QUARTO 204 REMOVIDO e SOCCER com até 4 pessoas
         const quartos = {
             terreo: [1, 2, 3, 4, 5, 6, 7, 8, 9],
             primeiro: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-            segundo: [200, 201, 202, 203, 204],
+            segundo: [200, 201, 202, 203], // QUARTO 204 REMOVIDO
             tenis: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
             soccer: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
         };
@@ -1032,12 +1049,9 @@
         let andarAtual = 'terreo';
         let intervaloAtualizacao;
         let ultimaAtualizacao = localStorage.getItem('ultimaAtualizacaoHWT') || null;
-        let sincronizando = false;
 
         // 🔄 SISTEMA DE SINCRONIZAÇÃO SIMPLES ENTRE COMPUTADORES
         function sincronizarEntreComputadores() {
-            if (sincronizando) return;
-            
             // Usando um servidor público gratuito para sincronização
             const url = 'https://jsonblob.com/api/jsonBlob/12345678-1234-1234-1234-123456789012';
             
@@ -1228,31 +1242,6 @@
         function iniciarSincronizacao() {
             // Sincronizar a cada 10 segundos
             setInterval(sincronizarEntreComputadores, 10000);
-            
-            // Atualizar indicador de sincronização
-            atualizarIndicadorSincronizacao();
-        }
-
-        function atualizarIndicadorSincronizacao(status = 'sincronizado') {
-            const statusElement = document.getElementById('sync-status');
-            const textElement = document.getElementById('sync-text');
-            
-            statusElement.className = 'sync-status';
-            
-            switch(status) {
-                case 'sincronizado':
-                    statusElement.classList.add('sync-online');
-                    textElement.textContent = 'Sincronizado';
-                    break;
-                case 'sincronizando':
-                    statusElement.classList.add('sync-pending');
-                    textElement.textContent = 'Sincronizando...';
-                    break;
-                case 'erro':
-                    statusElement.classList.add('sync-offline');
-                    textElement.textContent = 'Offline';
-                    break;
-            }
         }
 
         // Função para atualizar campos de hóspedes dinamicamente
@@ -1263,7 +1252,7 @@
             
             // Determinar o número máximo de pessoas baseado no setor
             const quarto = parseInt(document.getElementById('editar-quarto').value);
-            const maxPessoas = (andarAtual === 'tenis' || andarAtual === 'soccer') ? 3 : 2;
+            const maxPessoas = (andarAtual === 'soccer') ? 4 : 3; // SOCCER AGORA COM ATÉ 4 PESSOAS
             
             // Atualizar as opções disponíveis no select
             const selectNumPessoas = document.getElementById('editar-num-pessoas');
@@ -1377,7 +1366,8 @@
             if (registroHistorico) {
                 registroHistorico.status = 'finalizado';
                 registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
-                registroHistorico.horaSaidaReal = new Date().toTimeString().split(' ')[0].substring(0, 5);
+                // REMOVER a hora da saída real - apenas manter a data
+                delete registroHistorico.horaSaidaReal;
                 registroHistorico.checkoutAutomatico = true;
             }
             
@@ -1466,10 +1456,6 @@
             // Iniciar atualização da data e hora
             atualizarDataHora();
             intervaloAtualizacao = setInterval(atualizarDataHora, 1000);
-            
-            // Atualizar tempo da última atualização
-            document.getElementById('last-update-time').textContent = 
-                new Date().toLocaleTimeString('pt-BR');
         }
         
         // Função para carregar quartos na visualização
@@ -1479,15 +1465,20 @@
             
             quartos[andarAtual].forEach(numero => {
                 const hospede = hospedesAtivos.find(h => h.quarto === numero);
-                const status = hospede ? 'ocupado' : 'disponivel';
+                let status = hospede ? 'ocupado' : 'disponivel';
                 const pessoasTexto = hospede ? `${hospede.numPessoas} pessoa${hospede.numPessoas > 1 ? 's' : ''}` : '';
+                
+                // Verificar se o quarto está em manutenção
+                if (hospede && hospede.status === 'manutencao') {
+                    status = 'manutencao';
+                }
                 
                 const quartoElement = document.createElement('div');
                 quartoElement.className = `quarto ${status}`;
                 quartoElement.innerHTML = `
                     <div class="quarto-numero">${numero}</div>
                     <div class="quarto-status">
-                        <i class="fas fa-bed"></i>
+                        <i class="fas ${status === 'manutencao' ? 'fa-tools' : 'fa-bed'}"></i>
                     </div>
                     <div class="quarto-pessoas">${pessoasTexto}</div>
                     <button class="edit-btn">Editar</button>
@@ -1517,6 +1508,9 @@
             tbody.innerHTML = '';
             
             hospedesAtivos.forEach(hospede => {
+                // Pular quartos em manutenção da lista de ocupados
+                if (hospede.status === 'manutencao') return;
+                
                 const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
                 const documentosHospedes = hospede.documentos ? hospede.documentos.join(', ') : hospede.documento;
                 const telefonesHospedes = hospede.telefones ? hospede.telefones.join(', ') : hospede.telefone;
@@ -1579,6 +1573,7 @@
                     if (filtroStatus === 'ativo') return item.status === 'ativo';
                     if (filtroStatus === 'finalizado') return item.status === 'finalizado' && !item.checkoutAutomatico;
                     if (filtroStatus === 'automatico') return item.checkoutAutomatico;
+                    if (filtroStatus === 'manutencao') return item.status === 'manutencao';
                     return true;
                 });
             }
@@ -1625,6 +1620,9 @@
                 } else if (estadia.checkoutAutomatico) {
                     statusTexto = 'Auto Finalizado';
                     statusClasse = 'status-automatico';
+                } else if (estadia.status === 'manutencao') {
+                    statusTexto = 'Manutenção';
+                    statusClasse = 'status-manutencao';
                 }
                 
                 const item = document.createElement('div');
@@ -1676,8 +1674,8 @@
                             </div>
                             ${estadia.dataSaidaReal ? `
                             <div class="detalhes-item">
-                                <div class="detalhes-label">Data/Hora de Saída Real</div>
-                                <div class="detalhes-value">${formatarDataHora(estadia.dataSaidaReal, estadia.horaSaidaReal)}</div>
+                                <div class="detalhes-label">Data de Saída Real</div>
+                                <div class="detalhes-value">${formatarData(estadia.dataSaidaReal)}</div>
                             </div>
                             ` : ''}
                             <div class="detalhes-item">
@@ -1686,6 +1684,7 @@
                             </div>
                         </div>
                         
+                        ${estadia.status !== 'manutencao' ? `
                         <div style="margin-top: 20px;">
                             <div class="hospede-titulo">Hóspedes</div>
                             <div class="detalhes-grid">
@@ -1710,6 +1709,20 @@
                                 `}
                             </div>
                         </div>
+                        ` : `
+                        <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 6px;">
+                            <i class="fas fa-tools" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                            <h4 style="margin-bottom: 10px;">Quarto em Manutenção</h4>
+                            <p>Este quarto está temporariamente indisponível para reservas devido a manutenção.</p>
+                        </div>
+                        `}
+                        
+                        ${estadia.observacao ? `
+                        <div class="observacao-box">
+                            <div class="observacao-label">Observação:</div>
+                            <div class="observacao-text">${estadia.observacao}</div>
+                        </div>
+                        ` : ''}
                         
                         ${estadia.checkoutAutomatico ? `
                         <div style="margin-top: 20px; padding: 10px; background-color: #fff3cd; border-radius: 4px;">
@@ -1775,7 +1788,8 @@
                 if (registroHistorico) {
                     registroHistorico.status = 'finalizado';
                     registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
-                    registroHistorico.horaSaidaReal = new Date().toTimeString().split(' ')[0].substring(0, 5);
+                    // REMOVER a hora da saída real - apenas manter a data
+                    delete registroHistorico.horaSaidaReal;
                 }
                 
                 // Remover dos hóspedes ativos
@@ -1804,32 +1818,43 @@
             document.getElementById('editar-quarto').value = quarto;
             
             if (hospede) {
-                document.getElementById('editar-status').value = 'ocupado';
-                camposOcupado.style.display = 'block';
-                
-                document.getElementById('editar-num-pessoas').value = hospede.numPessoas;
-                
-                // Preencher dados de entrada/saída
-                document.getElementById('editar-data-entrada').value = hospede.entrada || '';
-                document.getElementById('editar-data-saida').value = hospede.saida || '';
-                document.getElementById('editar-hora-entrada').value = hospede.horaEntrada || '14:00';
-                document.getElementById('editar-hora-saida').value = hospede.horaSaida || '12:00';
-                
-                // Atualizar campos de hóspedes
-                atualizarCamposHospedes();
-                
-                // Preencher dados dos hóspedes
-                if (hospede.nomes && hospede.nomes.length > 0) {
-                    for (let i = 0; i < hospede.nomes.length; i++) {
-                        document.getElementById(`editar-nome-hospede${i+1}`).value = hospede.nomes[i];
-                        document.getElementById(`editar-documento${i+1}`).value = hospede.documentos ? hospede.documentos[i] : '';
-                        document.getElementById(`editar-telefone${i+1}`).value = hospede.telefones ? hospede.telefones[i] : '';
-                    }
+                document.getElementById('editar-status').value = hospede.status || 'ocupado';
+                if (hospede.status === 'manutencao') {
+                    camposOcupado.style.display = 'none';
                 } else {
-                    // Compatibilidade com dados antigos
-                    document.getElementById('editar-nome-hospede1').value = hospede.nome || '';
-                    document.getElementById('editar-documento1').value = hospede.documento || '';
-                    document.getElementById('editar-telefone1').value = hospede.telefone || '';
+                    camposOcupado.style.display = 'block';
+                    
+                    document.getElementById('editar-num-pessoas').value = hospede.numPessoas || 1;
+                    
+                    // Preencher dados de entrada/saída
+                    document.getElementById('editar-data-entrada').value = hospede.entrada || '';
+                    document.getElementById('editar-data-saida').value = hospede.saida || '';
+                    document.getElementById('editar-hora-entrada').value = hospede.horaEntrada || '14:00';
+                    document.getElementById('editar-hora-saida').value = hospede.horaSaida || '12:00';
+                    
+                    // Preencher observação
+                    document.getElementById('editar-observacao').value = hospede.observacao || '';
+                    
+                    // Atualizar campos de hóspedes
+                    atualizarCamposHospedes();
+                    
+                    // Preencher dados dos hóspedes
+                    if (hospede.nomes && hospede.nomes.length > 0) {
+                        for (let i = 0; i < hospede.nomes.length; i++) {
+                            const nomeField = document.getElementById(`editar-nome-hospede${i+1}`);
+                            const docField = document.getElementById(`editar-documento${i+1}`);
+                            const telField = document.getElementById(`editar-telefone${i+1}`);
+                            
+                            if (nomeField) nomeField.value = hospede.nomes[i];
+                            if (docField) docField.value = hospede.documentos ? hospede.documentos[i] : '';
+                            if (telField) telField.value = hospede.telefones ? hospede.telefones[i] : '';
+                        }
+                    } else {
+                        // Compatibilidade com dados antigos
+                        document.getElementById('editar-nome-hospede1').value = hospede.nome || '';
+                        document.getElementById('editar-documento1').value = hospede.documento || '';
+                        document.getElementById('editar-telefone1').value = hospede.telefone || '';
+                    }
                 }
             } else {
                 document.getElementById('editar-status').value = 'disponivel';
@@ -1837,6 +1862,7 @@
                 
                 // Limpar campos
                 document.getElementById('editar-num-pessoas').value = '1';
+                document.getElementById('editar-observacao').value = '';
                 
                 // Definir datas padrão
                 const hoje = new Date().toISOString().split('T')[0];
@@ -1860,6 +1886,7 @@
         function salvarEdicaoCheckin() {
             const quarto = parseInt(document.getElementById('editar-quarto').value);
             const status = document.getElementById('editar-status').value;
+            const observacao = document.getElementById('editar-observacao').value;
             
             const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
             
@@ -1906,7 +1933,9 @@
                     entrada,
                     saida,
                     horaEntrada,
-                    horaSaida
+                    horaSaida,
+                    observacao, // GARANTIR que a observação seja salva
+                    status: 'ativo'
                 };
                 
                 if (hospedeIndex !== -1) {
@@ -1915,10 +1944,13 @@
                     
                     // Atualizar também no histórico se existir
                     const registroHistorico = historico.find(h => 
-                        h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+                        h.quarto === quarto && (h.status === 'ativo' || h.status === 'manutencao') && !h.dataSaidaReal
                     );
                     if (registroHistorico) {
                         Object.assign(registroHistorico, hospede);
+                        registroHistorico.status = 'ativo';
+                        // GARANTIR que a observação seja atualizada no histórico também
+                        registroHistorico.observacao = observacao;
                     }
                 } else {
                     // Adicionar novo hóspede
@@ -1933,19 +1965,55 @@
                     };
                     historico.unshift(registroHistorico);
                 }
-            } else {
-                // Remover hóspede se existir
+            } else if (status === 'manutencao') {
+                // Marcar quarto como em manutenção
+                const hospede = {
+                    quarto,
+                    status: 'manutencao',
+                    observacao, // GARANTIR que a observação seja salva
+                    dataRegistro: new Date().toISOString().split('T')[0]
+                };
+                
                 if (hospedeIndex !== -1) {
-                    const hospede = hospedesAtivos[hospedeIndex];
+                    // Atualizar hóspede existente para manutenção
+                    hospedesAtivos[hospedeIndex] = hospede;
                     
-                    // Marcar como finalizado no histórico
+                    // Atualizar também no histórico
                     const registroHistorico = historico.find(h => 
                         h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
                     );
                     if (registroHistorico) {
-                        registroHistorico.status = 'finalizado';
-                        registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
-                        registroHistorico.horaSaidaReal = new Date().toTimeString().split(' ')[0].substring(0, 5);
+                        registroHistorico.status = 'manutencao';
+                        registroHistorico.observacao = observacao;
+                    }
+                } else {
+                    // Adicionar novo registro de manutenção
+                    hospedesAtivos.push(hospede);
+                    
+                    // Registrar no histórico
+                    const registroHistorico = {
+                        ...hospede,
+                        dataRegistro: new Date().toISOString().split('T')[0],
+                        horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                    };
+                    historico.unshift(registroHistorico);
+                }
+            } else {
+                // Remover hóspede se existir (status = disponivel)
+                if (hospedeIndex !== -1) {
+                    const hospede = hospedesAtivos[hospedeIndex];
+                    
+                    // Se estava ocupado, marcar como finalizado no histórico
+                    if (hospede.status === 'ativo') {
+                        const registroHistorico = historico.find(h => 
+                            h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+                        );
+                        if (registroHistorico) {
+                            registroHistorico.status = 'finalizado';
+                            registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
+                            // REMOVER a hora da saída real
+                            delete registroHistorico.horaSaidaReal;
+                        }
                     }
                     
                     hospedesAtivos.splice(hospedeIndex, 1);
@@ -1975,36 +2043,91 @@
             titulo.textContent = `Quarto ${quarto}`;
             
             if (hospede) {
-                const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
-                const documentosHospedes = hospede.documentos ? hospede.documentos.join(', ') : hospede.documento;
-                const telefonesHospedes = hospede.telefones ? hospede.telefones.join(', ') : hospede.telefone;
-                
-                conteudo.innerHTML = `
-                    <div class="status-indicator">
-                        <div class="status-dot ocupado"></div>
-                        <span>Ocupado</span>
-                    </div>
-                    <p><strong>Hóspedes:</strong> ${nomesHospedes}</p>
-                    <p><strong>Documentos:</strong> ${documentosHospedes}</p>
-                    <p><strong>Telefones:</strong> ${telefonesHospedes}</p>
-                    <p><strong>Número de pessoas:</strong> ${hospede.numPessoas}</p>
-                    <p><strong>Entrada:</strong> ${formatarDataHora(hospede.entrada, hospede.horaEntrada)}</p>
-                    <p><strong>Saída prevista:</strong> ${formatarDataHora(hospede.saida, hospede.horaSaida)}</p>
-                    <button class="edit-btn" style="margin-top: 15px;">Editar Check-in</button>
-                    <button class="checkout-btn" style="margin-top: 10px;">Fazer Check-out</button>
-                `;
-                
-                // Adicionar evento ao botão de check-out
-                conteudo.querySelector('.checkout-btn').addEventListener('click', function() {
-                    fazerCheckout(quarto);
-                    modal.style.display = 'none';
-                });
+                if (hospede.status === 'manutencao') {
+                    conteudo.innerHTML = `
+                        <div class="status-indicator">
+                            <div class="status-dot manutencao"></div>
+                            <span>Manutenção</span>
+                        </div>
+                        <p><strong>Status:</strong> Em manutenção</p>
+                        <p><strong>Data do registro:</strong> ${formatarData(hospede.dataRegistro)}</p>
+                        ${hospede.observacao ? `
+                        <div class="observacao-box">
+                            <div class="observacao-label">Observação:</div>
+                            <div class="observacao-text">${hospede.observacao}</div>
+                        </div>
+                        ` : ''}
+                        <button class="edit-btn" style="margin-top: 15px;">Editar Status</button>
+                        <button class="manutencao-btn" style="margin-top: 10px;">Liberar Manutenção</button>
+                    `;
+                } else {
+                    const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
+                    const documentosHospedes = hospede.documentos ? hospede.documentos.join(', ') : hospede.documento;
+                    const telefonesHospedes = hospede.telefones ? hospede.telefones.join(', ') : hospede.telefone;
+                    
+                    conteudo.innerHTML = `
+                        <div class="status-indicator">
+                            <div class="status-dot ocupado"></div>
+                            <span>Ocupado</span>
+                        </div>
+                        <p><strong>Hóspedes:</strong> ${nomesHospedes}</p>
+                        <p><strong>Documentos:</strong> ${documentosHospedes}</p>
+                        <p><strong>Telefones:</strong> ${telefonesHospedes}</p>
+                        <p><strong>Número de pessoas:</strong> ${hospede.numPessoas}</p>
+                        <p><strong>Entrada:</strong> ${formatarDataHora(hospede.entrada, hospede.horaEntrada)}</p>
+                        <p><strong>Saída prevista:</strong> ${formatarDataHora(hospede.saida, hospede.horaSaida)}</p>
+                        ${hospede.observacao ? `
+                        <div class="observacao-box">
+                            <div class="observacao-label">Observação:</div>
+                            <div class="observacao-text">${hospede.observacao}</div>
+                        </div>
+                        ` : ''}
+                        <button class="edit-btn" style="margin-top: 15px;">Editar Check-in</button>
+                        <button class="checkout-btn" style="margin-top: 10px;">Fazer Check-out</button>
+                        <button class="manutencao-btn" style="margin-top: 5px;">Colocar em Manutenção</button>
+                    `;
+                    
+                    // Adicionar evento ao botão de check-out
+                    conteudo.querySelector('.checkout-btn').addEventListener('click', function() {
+                        fazerCheckout(quarto);
+                        modal.style.display = 'none';
+                    });
+                }
                 
                 // Adicionar evento ao botão de edição
                 conteudo.querySelector('.edit-btn').addEventListener('click', function() {
                     modal.style.display = 'none';
                     abrirEdicaoCheckin(quarto, hospede);
                 });
+                
+                // Adicionar evento ao botão de manutenção
+                const manutencaoBtn = conteudo.querySelector('.manutencao-btn');
+                if (manutencaoBtn) {
+                    manutencaoBtn.addEventListener('click', function() {
+                        if (this.textContent === 'Colocar em Manutenção') {
+                            // Colocar em manutenção
+                            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+                            if (hospedeIndex !== -1) {
+                                hospedesAtivos[hospedeIndex].status = 'manutencao';
+                                salvarDados();
+                                carregarQuartos();
+                                carregarHospedesAtivos();
+                                alert(`Quarto ${quarto} colocado em manutenção!`);
+                            }
+                        } else {
+                            // Liberar da manutenção
+                            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+                            if (hospedeIndex !== -1) {
+                                hospedesAtivos.splice(hospedeIndex, 1);
+                                salvarDados();
+                                carregarQuartos();
+                                carregarHospedesAtivos();
+                                alert(`Quarto ${quarto} liberado da manutenção!`);
+                            }
+                        }
+                        modal.style.display = 'none';
+                    });
+                }
             } else {
                 conteudo.innerHTML = `
                     <div class="status-indicator">
@@ -2013,17 +2136,42 @@
                     </div>
                     <p>Este quarto está disponível para reserva.</p>
                     <button class="edit-btn" style="margin-top: 15px;" onclick="document.getElementById('modal-quarto').style.display = 'none'; abrirEdicaoCheckin(${quarto}, null);">Fazer Check-in</button>
+                    <button class="manutencao-btn" style="margin-top: 10px;" onclick="colocarEmManutencao(${quarto})">Colocar em Manutenção</button>
                 `;
             }
             
             modal.style.display = 'flex';
+        }
+
+        // Função para colocar quarto em manutenção diretamente
+        function colocarEmManutencao(quarto) {
+            const hospede = {
+                quarto,
+                status: 'manutencao',
+                dataRegistro: new Date().toISOString().split('T')[0]
+            };
+            
+            hospedesAtivos.push(hospede);
+            
+            // Registrar no histórico
+            const registroHistorico = {
+                ...hospede,
+                dataRegistro: new Date().toISOString().split('T')[0],
+                horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+            };
+            historico.unshift(registroHistorico);
+            
+            salvarDados();
+            carregarQuartos();
+            document.getElementById('modal-quarto').style.display = 'none';
+            alert(`Quarto ${quarto} colocado em manutenção!`);
         }
         
         // Função para atualizar quantidades
         function atualizarQuantidades() {
             const totalQuartos = quartos.terreo.length + quartos.primeiro.length + quartos.segundo.length + 
                                 quartos.tenis.length + quartos.soccer.length;
-            const quartosOcupados = hospedesAtivos.length;
+            const quartosOcupados = hospedesAtivos.filter(h => h.status === 'ativo').length;
             
             document.getElementById('quantidade-quartos').textContent = totalQuartos;
             document.getElementById('quantidade-hospedes').textContent = quartosOcupados;
@@ -2064,10 +2212,6 @@
             
             // Tentar enviar para nuvem
             enviarParaNuvem();
-            
-            // Atualizar tempo da última atualização
-            document.getElementById('last-update-time').textContent = 
-                new Date().toLocaleTimeString('pt-BR');
         }
     </script>
 </body>
