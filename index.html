@@ -1327,29 +1327,42 @@
             
             let quartosLiberados = false;
             
-            // Verificar cada hóspede ativo
-            hospedesAtivos.forEach((hospede, index) => {
+            console.log(`Verificando liberação automática - Data: ${dataAtual}, Hora: ${horaAtual}`);
+            
+            // Verificar cada hóspede ativo (usando índice reverso para evitar problemas ao remover)
+            for (let i = hospedesAtivos.length - 1; i >= 0; i--) {
+                const hospede = hospedesAtivos[i];
+                
+                // Pular quartos em manutenção
+                if (hospede.status === 'manutencao') continue;
+                
+                console.log(`Verificando quarto ${hospede.quarto}: Saída=${hospede.saida}, HoraSaída=${hospede.horaSaida}`);
+                
                 // Verificar se a data de saída é hoje ou anterior
                 if (hospede.saida <= dataAtual) {
                     // Se for hoje, verificar se já passou do horário de saída
                     if (hospede.saida === dataAtual) {
                         if (hospede.horaSaida && horaAtual >= hospede.horaSaida) {
+                            console.log(`Liberando quarto ${hospede.quarto} - Hora de saída atingida`);
                             // Liberar quarto automaticamente
-                            liberarQuartoAutomaticamente(hospede.quarto, index);
+                            liberarQuartoAutomaticamente(hospede.quarto, i);
                             quartosLiberados = true;
                         }
                     } else {
                         // Se a data de saída já passou, liberar quarto
-                        liberarQuartoAutomaticamente(hospede.quarto, index);
+                        console.log(`Liberando quarto ${hospede.quarto} - Data de saída passou`);
+                        liberarQuartoAutomaticamente(hospede.quarto, i);
                         quartosLiberados = true;
                     }
                 }
-            });
+            }
             
             // Se algum quarto foi liberado, atualizar a interface
             if (quartosLiberados) {
+                console.log('Quartos liberados - atualizando interface');
                 carregarQuartos();
                 carregarHospedesAtivos();
+                carregarHistorico();
                 atualizarQuantidades();
             }
         }
@@ -1369,6 +1382,22 @@
                 // REMOVER a hora da saída real - apenas manter a data
                 delete registroHistorico.horaSaidaReal;
                 registroHistorico.checkoutAutomatico = true;
+                
+                console.log(`Quarto ${quarto} atualizado no histórico: status = finalizado`);
+            } else {
+                console.log(`AVISO: Não encontrou registro ativo no histórico para o quarto ${quarto}`);
+                
+                // Criar um registro no histórico se não encontrou (fallback)
+                const novoRegistroHistorico = {
+                    ...hospede,
+                    status: 'finalizado',
+                    dataSaidaReal: new Date().toISOString().split('T')[0],
+                    checkoutAutomatico: true,
+                    dataRegistro: new Date().toISOString().split('T')[0],
+                    horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                };
+                historico.unshift(novoRegistroHistorico);
+                console.log(`Criado novo registro no histórico para quarto ${quarto}`);
             }
             
             // Remover dos hóspedes ativos
