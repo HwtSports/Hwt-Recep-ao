@@ -1616,7 +1616,7 @@
                     ...hospede,
                     status: 'finalizado',
                     dataSaidaReal: new Date().toISOString().split('T')[0],
-                    checkoutAutomatico: true,
+                    checkoutAutomatico = true,
                     dataRegistro: new Date().toISOString().split('T')[0],
                     horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
                 };
@@ -2305,7 +2305,6 @@
                         </div>
                         ` : ''}
                         <button class="edit-btn" style="margin-top: 15px;">Editar Status</button>
-                        <button class="manutencao-btn" style="margin-top: 10px;">Liberar Manutenção</button>
                     `;
                 } else {
                     const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
@@ -2331,7 +2330,6 @@
                         ` : ''}
                         <button class="edit-btn" style="margin-top: 15px;">Editar Check-in</button>
                         <button class="checkout-btn" style="margin-top: 10px;">Fazer Check-out</button>
-                        <button class="manutencao-btn" style="margin-top: 5px;">Colocar em Manutenção</button>
                     `;
                     
                     // Adicionar evento ao botão de check-out
@@ -2346,35 +2344,6 @@
                     modal.style.display = 'none';
                     abrirEdicaoCheckin(quarto, hospede);
                 });
-                
-                // Adicionar evento ao botão de manutenção
-                const manutencaoBtn = conteudo.querySelector('.manutencao-btn');
-                if (manutencaoBtn) {
-                    manutencaoBtn.addEventListener('click', function() {
-                        if (this.textContent === 'Colocar em Manutenção') {
-                            // Colocar em manutenção
-                            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
-                            if (hospedeIndex !== -1) {
-                                hospedesAtivos[hospedeIndex].status = 'manutencao';
-                                salvarDados();
-                                carregarQuartos();
-                                carregarHospedesAtivos();
-                                alert(`Quarto ${quarto} colocado em manutenção!`);
-                            }
-                        } else {
-                            // Liberar da manutenção
-                            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
-                            if (hospedeIndex !== -1) {
-                                hospedesAtivos.splice(hospedeIndex, 1);
-                                salvarDados();
-                                carregarQuartos();
-                                carregarHospedesAtivos();
-                                alert(`Quarto ${quarto} liberado da manutenção!`);
-                            }
-                        }
-                        modal.style.display = 'none';
-                    });
-                }
             } else {
                 conteudo.innerHTML = `
                     <div class="status-indicator">
@@ -2383,35 +2352,10 @@
                     </div>
                     <p>Este quarto está disponível para reserva.</p>
                     <button class="edit-btn" style="margin-top: 15px;" onclick="document.getElementById('modal-quarto').style.display = 'none'; abrirEdicaoCheckin(${quarto}, null);">Fazer Check-in</button>
-                    <button class="manutencao-btn" style="margin-top: 10px;" onclick="colocarEmManutencao(${quarto})">Colocar em Manutenção</button>
                 `;
             }
             
             modal.style.display = 'flex';
-        }
-
-        // Função para colocar quarto em manutenção diretamente
-        function colocarEmManutencao(quarto) {
-            const hospede = {
-                quarto,
-                status: 'manutencao',
-                dataRegistro: new Date().toISOString().split('T')[0]
-            };
-            
-            hospedesAtivos.push(hospede);
-            
-            // Registrar no histórico
-            const registroHistorico = {
-                ...hospede,
-                dataRegistro: new Date().toISOString().split('T')[0],
-                horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
-            };
-            historico.unshift(registroHistorico);
-            
-            salvarDados();
-            carregarQuartos();
-            document.getElementById('modal-quarto').style.display = 'none';
-            alert(`Quarto ${quarto} colocado em manutenção!`);
         }
         
         // Função para atualizar quantidades
