@@ -1202,10 +1202,10 @@
                 fazerLogout();
             });
             
-            // Configurar datas mínimas
+            // Configurar datas mínimas - CORREÇÃO: Permitir datas passadas
             const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('editar-data-entrada').min = hoje;
-            document.getElementById('editar-data-saida').min = hoje;
+            document.getElementById('editar-data-entrada').min = '2020-01-01'; // Permitir datas passadas
+            document.getElementById('editar-data-saida').min = '2020-01-01'; // Permitir datas passadas
             
             // Configurar mudança de status no formulário de edição
             document.getElementById('editar-status').addEventListener('change', function() {
@@ -2038,7 +2038,7 @@
                 document.getElementById('editar-num-pessoas').value = '1';
                 document.getElementById('editar-observacao').value = '';
                 
-                // Definir datas padrão
+                // Definir datas padrão - CORREÇÃO: Permitir datas passadas
                 const hoje = new Date().toISOString().split('T')[0];
                 const amanha = new Date();
                 amanha.setDate(amanha.getDate() + 1);
@@ -2056,7 +2056,7 @@
             modal.style.display = 'flex';
         }
         
-        // Função para salvar edição de check-in
+        // Função para salvar edição de check-in - CORRIGIDA
         function salvarEdicaoCheckin() {
             const quarto = parseInt(document.getElementById('editar-quarto').value);
             const status = document.getElementById('editar-status').value;
@@ -2071,7 +2071,8 @@
                 const horaEntrada = document.getElementById('editar-hora-entrada').value;
                 const horaSaida = document.getElementById('editar-hora-saida').value;
                 
-                // Validar se a data de saída não é anterior à data de entrada
+                // CORREÇÃO: Remover validação que impedia datas passadas
+                // Validar apenas se a data de saída não é anterior à data de entrada
                 if (new Date(saida) < new Date(entrada)) {
                     alert('A data de saída não pode ser anterior à data de entrada');
                     return;
@@ -2108,7 +2109,7 @@
                     saida,
                     horaEntrada,
                     horaSaida,
-                    observacao, // GARANTIR que a observação seja salva
+                    observacao,
                     status: 'ativo'
                 };
                 
@@ -2123,7 +2124,6 @@
                     if (registroHistorico) {
                         Object.assign(registroHistorico, hospede);
                         registroHistorico.status = 'ativo';
-                        // GARANTIR que a observação seja atualizada no histórico também
                         registroHistorico.observacao = observacao;
                     }
                 } else {
@@ -2140,40 +2140,50 @@
                     historico.unshift(registroHistorico);
                 }
             } else if (status === 'manutencao') {
-                // Marcar quarto como em manutenção
-                const hospede = {
+                // CORREÇÃO: Marcar quarto como em manutenção (mesmo se já estiver ocupado)
+                const hospedeManutencao = {
                     quarto,
                     status: 'manutencao',
-                    observacao, // GARANTIR que a observação seja salva
-                    dataRegistro: new Date().toISOString().split('T')[0]
+                    observacao,
+                    dataRegistro: new Date().toISOString().split('T')[0],
+                    horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
                 };
                 
                 if (hospedeIndex !== -1) {
                     // Atualizar hóspede existente para manutenção
-                    hospedesAtivos[hospedeIndex] = hospede;
+                    hospedesAtivos[hospedeIndex] = hospedeManutencao;
                     
                     // Atualizar também no histórico
                     const registroHistorico = historico.find(h => 
-                        h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
+                        h.quarto === quarto && !h.dataSaidaReal
                     );
                     if (registroHistorico) {
                         registroHistorico.status = 'manutencao';
                         registroHistorico.observacao = observacao;
+                        registroHistorico.dataRegistro = new Date().toISOString().split('T')[0];
+                        registroHistorico.horaRegistro = new Date().toTimeString().split(' ')[0].substring(0, 5);
+                    } else {
+                        // Se não encontrou registro ativo, criar novo
+                        historico.unshift({
+                            ...hospedeManutencao,
+                            dataRegistro: new Date().toISOString().split('T')[0],
+                            horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+                        });
                     }
                 } else {
                     // Adicionar novo registro de manutenção
-                    hospedesAtivos.push(hospede);
+                    hospedesAtivos.push(hospedeManutencao);
                     
                     // Registrar no histórico
                     const registroHistorico = {
-                        ...hospede,
+                        ...hospedeManutencao,
                         dataRegistro: new Date().toISOString().split('T')[0],
                         horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
                     };
                     historico.unshift(registroHistorico);
                 }
             } else {
-                // Remover hóspede se existir (status = disponivel)
+                // Status = disponivel - Remover hóspede se existir
                 if (hospedeIndex !== -1) {
                     const hospede = hospedesAtivos[hospedeIndex];
                     
@@ -2185,7 +2195,6 @@
                         if (registroHistorico) {
                             registroHistorico.status = 'finalizado';
                             registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
-                            // REMOVER a hora da saída real
                             delete registroHistorico.horaSaidaReal;
                         }
                     }
