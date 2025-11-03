@@ -281,7 +281,7 @@
         }
         
         .quarto.manutencao {
-            background-color: #2c2c2c;
+            background-color: #000000;
             border-color: var(--preto);
             color: var(--branco);
         }
@@ -859,6 +859,34 @@
                 flex-direction: column;
             }
         }
+
+        /* Botão de manutenção direta */
+        .manutencao-direct-btn {
+            background-color: var(--amarelo);
+            color: var(--cinza);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .manutencao-direct-btn:hover {
+            background-color: #e0a800;
+        }
+
+        /* Botão para finalizar manutenção */
+        .finalizar-manutencao-btn {
+            background-color: var(--verde);
+            color: var(--branco);
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .finalizar-manutencao-btn:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -1080,7 +1108,6 @@
                     <select id="editar-status" required>
                         <option value="disponivel">Disponível</option>
                         <option value="ocupado">Ocupado</option>
-                        <option value="manutencao">Manutenção</option>
                     </select>
                 </div>
                 
@@ -1132,6 +1159,27 @@
                 
                 <button type="submit">Salvar Alterações</button>
                 <button type="button" class="secondary-btn" id="cancelar-edicao">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para manutenção direta -->
+    <div id="modal-manutencao-direta" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-manutencao-titulo">Colocar Quarto em Manutenção</h3>
+                <span class="close close-manutencao">&times;</span>
+            </div>
+            <form id="manutencao-direta-form">
+                <input type="hidden" id="manutencao-quarto">
+                
+                <div class="form-group">
+                    <label for="manutencao-observacao">Observação (Opcional)</label>
+                    <textarea id="manutencao-observacao" placeholder="Digite o motivo da manutenção..."></textarea>
+                </div>
+                
+                <button type="submit">Colocar em Manutenção</button>
+                <button type="button" class="secondary-btn" id="cancelar-manutencao">Cancelar</button>
             </form>
         </div>
     </div>
@@ -1202,10 +1250,9 @@
                 fazerLogout();
             });
             
-            // Configurar datas mínimas - CORREÇÃO: Permitir datas passadas
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('editar-data-entrada').min = '2020-01-01'; // Permitir datas passadas
-            document.getElementById('editar-data-saida').min = '2020-01-01'; // Permitir datas passadas
+            // Configurar datas mínimas - Permitir datas passadas
+            document.getElementById('editar-data-entrada').min = '2020-01-01';
+            document.getElementById('editar-data-saida').min = '2020-01-01';
             
             // Configurar mudança de status no formulário de edição
             document.getElementById('editar-status').addEventListener('change', function() {
@@ -1285,6 +1332,17 @@
                 document.getElementById('modal-editar-checkin').style.display = 'none';
             });
             
+            // Configurar formulário de manutenção direta
+            document.getElementById('manutencao-direta-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                salvarManutencaoDireta();
+            });
+            
+            // Configurar botão de cancelar manutenção
+            document.getElementById('cancelar-manutencao').addEventListener('click', function() {
+                document.getElementById('modal-manutencao-direta').style.display = 'none';
+            });
+            
             // Configurar modais
             document.querySelector('.close').addEventListener('click', function() {
                 document.getElementById('modal-quarto').style.display = 'none';
@@ -1292,6 +1350,10 @@
             
             document.querySelector('.close-editar').addEventListener('click', function() {
                 document.getElementById('modal-editar-checkin').style.display = 'none';
+            });
+
+            document.querySelector('.close-manutencao').addEventListener('click', function() {
+                document.getElementById('modal-manutencao-direta').style.display = 'none';
             });
             
             // Fechar modal ao clicar fora
@@ -1302,8 +1364,92 @@
                 if (e.target === document.getElementById('modal-editar-checkin')) {
                     document.getElementById('modal-editar-checkin').style.display = 'none';
                 }
+                if (e.target === document.getElementById('modal-manutencao-direta')) {
+                    document.getElementById('modal-manutencao-direta').style.display = 'none';
+                }
             });
         });
+
+        // FUNÇÃO: Abrir modal de manutenção direta
+        function abrirManutencaoDireta(quarto) {
+            const modal = document.getElementById('modal-manutencao-direta');
+            const titulo = document.getElementById('modal-manutencao-titulo');
+            
+            titulo.textContent = `Colocar Quarto ${quarto} em Manutenção`;
+            document.getElementById('manutencao-quarto').value = quarto;
+            document.getElementById('manutencao-observacao').value = '';
+            
+            modal.style.display = 'flex';
+        }
+
+        // FUNÇÃO: Finalizar manutenção diretamente
+        function finalizarManutencaoDireta(quarto) {
+            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+            
+            if (hospedeIndex !== -1) {
+                // Remover da lista de hóspedes ativos
+                hospedesAtivos.splice(hospedeIndex, 1);
+                
+                salvarDados();
+                
+                // Atualizar visualizações
+                carregarQuartos();
+                carregarHospedesAtivos();
+                carregarHistorico();
+                
+                // Fechar modal se estiver aberto
+                document.getElementById('modal-quarto').style.display = 'none';
+                
+                // Mostrar mensagem de sucesso
+                alert(`Manutenção do quarto ${quarto} finalizada com sucesso! Quarto agora está disponível.`);
+            }
+        }
+
+        // FUNÇÃO: Salvar manutenção direta
+        function salvarManutencaoDireta() {
+            const quarto = parseInt(document.getElementById('manutencao-quarto').value);
+            const observacao = document.getElementById('manutencao-observacao').value;
+            
+            const hospedeIndex = hospedesAtivos.findIndex(h => h.quarto === quarto);
+            
+            // Criar registro de manutenção
+            const hospedeManutencao = {
+                quarto,
+                status: 'manutencao',
+                observacao,
+                dataRegistro: new Date().toISOString().split('T')[0],
+                horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+            };
+            
+            if (hospedeIndex !== -1) {
+                // Se já existe um registro, atualizar para manutenção
+                hospedesAtivos[hospedeIndex] = hospedeManutencao;
+            } else {
+                // Adicionar novo registro de manutenção
+                hospedesAtivos.push(hospedeManutencao);
+            }
+            
+            // Registrar no histórico
+            const registroHistorico = {
+                ...hospedeManutencao,
+                dataRegistro: new Date().toISOString().split('T')[0],
+                horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
+            };
+            historico.unshift(registroHistorico);
+            
+            salvarDados();
+            
+            // Fechar modal
+            document.getElementById('modal-manutencao-direta').style.display = 'none';
+            
+            // Atualizar visualizações
+            carregarQuartos();
+            carregarHospedesAtivos();
+            carregarHistorico();
+            
+            // Mostrar mensagem de sucesso
+            alert(`Quarto ${quarto} colocado em manutenção com sucesso!`);
+        }
 
         // Função para exportar dados
         function exportarDados() {
@@ -1417,7 +1563,7 @@
             
             // Determinar o número máximo de pessoas baseado no setor
             const quarto = parseInt(document.getElementById('editar-quarto').value);
-            const maxPessoas = (andarAtual === 'soccer') ? 4 : 3; // SOCCER AGORA COM ATÉ 4 PESSOAS
+            const maxPessoas = (andarAtual === 'soccer') ? 4 : 3;
             
             // Atualizar as opções disponíveis no select
             const selectNumPessoas = document.getElementById('editar-num-pessoas');
@@ -1488,11 +1634,11 @@
         function verificarLiberacaoAutomatica() {
             const agora = new Date();
             const dataAtual = agora.toISOString().split('T')[0];
-            const horaAtual = agora.toTimeString().split(' ')[0].substring(0, 5); // Formato HH:MM
+            const horaAtual = agora.toTimeString().split(' ')[0].substring(0, 5);
             
             let quartosLiberados = false;
             
-            // Verificar cada hóspede ativo (usando índice reverso para evitar problemas ao remover)
+            // Verificar cada hóspede ativo
             for (let i = hospedesAtivos.length - 1; i >= 0; i--) {
                 const hospede = hospedesAtivos[i];
                 
@@ -1537,11 +1683,10 @@
             if (registroHistorico) {
                 registroHistorico.status = 'finalizado';
                 registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
-                // REMOVER a hora da saída real - apenas manter a data
                 delete registroHistorico.horaSaidaReal;
                 registroHistorico.checkoutAutomatico = true;
             } else {
-                // Criar um registro no histórico se não encontrou (fallback)
+                // Criar um registro no histórico se não encontrou
                 const novoRegistroHistorico = {
                     ...hospede,
                     status: 'finalizado',
@@ -1638,7 +1783,7 @@
             intervaloAtualizacao = setInterval(atualizarDataHora, 1000);
         }
         
-        // Função para carregar quartos na visualização
+        // Função para carregar quartos na visualização - CORRIGIDA: Removido botão de manutenção
         function carregarQuartos() {
             const container = document.getElementById('quartos-container');
             container.innerHTML = '';
@@ -1962,7 +2107,6 @@
                 if (registroHistorico) {
                     registroHistorico.status = 'finalizado';
                     registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
-                    // REMOVER a hora da saída real - apenas manter a data
                     delete registroHistorico.horaSaidaReal;
                 }
                 
@@ -1980,7 +2124,7 @@
             }
         }
         
-        // Função para abrir edição de check-in
+        // Função para abrir edição de check-in - CORRIGIDA: Agora funciona para quartos em manutenção
         function abrirEdicaoCheckin(quarto, hospede) {
             const modal = document.getElementById('modal-editar-checkin');
             const titulo = document.getElementById('modal-editar-titulo');
@@ -1992,10 +2136,13 @@
             document.getElementById('editar-quarto').value = quarto;
             
             if (hospede) {
-                document.getElementById('editar-status').value = hospede.status || 'ocupado';
+                // Se o quarto está em manutenção, mostrar como disponível
                 if (hospede.status === 'manutencao') {
+                    document.getElementById('editar-status').value = 'disponivel';
                     camposOcupado.style.display = 'none';
+                    document.getElementById('editar-observacao').value = hospede.observacao || '';
                 } else {
+                    document.getElementById('editar-status').value = hospede.status || 'ocupado';
                     camposOcupado.style.display = 'block';
                     
                     document.getElementById('editar-num-pessoas').value = hospede.numPessoas || 1;
@@ -2038,7 +2185,7 @@
                 document.getElementById('editar-num-pessoas').value = '1';
                 document.getElementById('editar-observacao').value = '';
                 
-                // Definir datas padrão - CORREÇÃO: Permitir datas passadas
+                // Definir datas padrão
                 const hoje = new Date().toISOString().split('T')[0];
                 const amanha = new Date();
                 amanha.setDate(amanha.getDate() + 1);
@@ -2056,7 +2203,7 @@
             modal.style.display = 'flex';
         }
         
-        // Função para salvar edição de check-in - CORRIGIDA
+        // Função para salvar edição de check-in - MODIFICADA: Remove manutenção e volta para disponível automaticamente
         function salvarEdicaoCheckin() {
             const quarto = parseInt(document.getElementById('editar-quarto').value);
             const status = document.getElementById('editar-status').value;
@@ -2071,8 +2218,7 @@
                 const horaEntrada = document.getElementById('editar-hora-entrada').value;
                 const horaSaida = document.getElementById('editar-hora-saida').value;
                 
-                // CORREÇÃO: Remover validação que impedia datas passadas
-                // Validar apenas se a data de saída não é anterior à data de entrada
+                // Validar se a data de saída não é anterior à data de entrada
                 if (new Date(saida) < new Date(entrada)) {
                     alert('A data de saída não pode ser anterior à data de entrada');
                     return;
@@ -2119,7 +2265,7 @@
                     
                     // Atualizar também no histórico se existir
                     const registroHistorico = historico.find(h => 
-                        h.quarto === quarto && (h.status === 'ativo' || h.status === 'manutencao') && !h.dataSaidaReal
+                        h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
                     );
                     if (registroHistorico) {
                         Object.assign(registroHistorico, hospede);
@@ -2139,56 +2285,17 @@
                     };
                     historico.unshift(registroHistorico);
                 }
-            } else if (status === 'manutencao') {
-                // CORREÇÃO: Marcar quarto como em manutenção (mesmo se já estiver ocupado)
-                const hospedeManutencao = {
-                    quarto,
-                    status: 'manutencao',
-                    observacao,
-                    dataRegistro: new Date().toISOString().split('T')[0],
-                    horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
-                };
-                
-                if (hospedeIndex !== -1) {
-                    // Atualizar hóspede existente para manutenção
-                    hospedesAtivos[hospedeIndex] = hospedeManutencao;
-                    
-                    // Atualizar também no histórico
-                    const registroHistorico = historico.find(h => 
-                        h.quarto === quarto && !h.dataSaidaReal
-                    );
-                    if (registroHistorico) {
-                        registroHistorico.status = 'manutencao';
-                        registroHistorico.observacao = observacao;
-                        registroHistorico.dataRegistro = new Date().toISOString().split('T')[0];
-                        registroHistorico.horaRegistro = new Date().toTimeString().split(' ')[0].substring(0, 5);
-                    } else {
-                        // Se não encontrou registro ativo, criar novo
-                        historico.unshift({
-                            ...hospedeManutencao,
-                            dataRegistro: new Date().toISOString().split('T')[0],
-                            horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
-                        });
-                    }
-                } else {
-                    // Adicionar novo registro de manutenção
-                    hospedesAtivos.push(hospedeManutencao);
-                    
-                    // Registrar no histórico
-                    const registroHistorico = {
-                        ...hospedeManutencao,
-                        dataRegistro: new Date().toISOString().split('T')[0],
-                        horaRegistro: new Date().toTimeString().split(' ')[0].substring(0, 5)
-                    };
-                    historico.unshift(registroHistorico);
-                }
             } else {
-                // Status = disponivel - Remover hóspede se existir
+                // Status = disponivel - Remover hóspede se existir (incluindo manutenção)
                 if (hospedeIndex !== -1) {
                     const hospede = hospedesAtivos[hospedeIndex];
                     
+                    // Se estava em manutenção, apenas remover da lista de ativos (não criar registro no histórico)
+                    if (hospede.status === 'manutencao') {
+                        hospedesAtivos.splice(hospedeIndex, 1);
+                    } 
                     // Se estava ocupado, marcar como finalizado no histórico
-                    if (hospede.status === 'ativo') {
+                    else if (hospede.status === 'ativo') {
                         const registroHistorico = historico.find(h => 
                             h.quarto === quarto && h.status === 'ativo' && !h.dataSaidaReal
                         );
@@ -2197,9 +2304,9 @@
                             registroHistorico.dataSaidaReal = new Date().toISOString().split('T')[0];
                             delete registroHistorico.horaSaidaReal;
                         }
+                        
+                        hospedesAtivos.splice(hospedeIndex, 1);
                     }
-                    
-                    hospedesAtivos.splice(hospedeIndex, 1);
                 }
             }
             
@@ -2217,7 +2324,7 @@
             alert('Alterações salvas com sucesso!');
         }
         
-        // Função para mostrar detalhes do quarto
+        // Função para mostrar detalhes do quarto - MODIFICADA: Adicionado botão para finalizar manutenção diretamente
         function mostrarDetalhesQuarto(quarto, hospede) {
             const modal = document.getElementById('modal-quarto');
             const titulo = document.getElementById('modal-titulo');
@@ -2240,8 +2347,22 @@
                             <div class="observacao-text">${hospede.observacao}</div>
                         </div>
                         ` : ''}
-                        <button class="edit-btn" style="margin-top: 15px;">Editar Status</button>
+                        <button class="finalizar-manutencao-btn" style="margin-top: 15px;">
+                            <i class="fas fa-check"></i> Finalizar Manutenção
+                        </button>
+                        <button class="edit-btn" style="margin-top: 10px;">Editar</button>
                     `;
+                    
+                    // Adicionar evento ao botão de finalizar manutenção
+                    conteudo.querySelector('.finalizar-manutencao-btn').addEventListener('click', function() {
+                        finalizarManutencaoDireta(quarto);
+                    });
+                    
+                    // Adicionar evento ao botão de edição
+                    conteudo.querySelector('.edit-btn').addEventListener('click', function() {
+                        modal.style.display = 'none';
+                        abrirEdicaoCheckin(quarto, hospede);
+                    });
                 } else {
                     const nomesHospedes = hospede.nomes ? hospede.nomes.join(', ') : hospede.nome;
                     const documentosHospedes = hospede.documentos ? hospede.documentos.join(', ') : hospede.documento;
@@ -2265,21 +2386,28 @@
                         </div>
                         ` : ''}
                         <button class="edit-btn" style="margin-top: 15px;">Editar Check-in</button>
+                        <button class="manutencao-direct-btn" style="margin-top: 10px;">Colocar em Manutenção</button>
                         <button class="checkout-btn" style="margin-top: 10px;">Fazer Check-out</button>
                     `;
+                    
+                    // Adicionar evento ao botão de manutenção direta
+                    conteudo.querySelector('.manutencao-direct-btn').addEventListener('click', function() {
+                        modal.style.display = 'none';
+                        abrirManutencaoDireta(quarto);
+                    });
                     
                     // Adicionar evento ao botão de check-out
                     conteudo.querySelector('.checkout-btn').addEventListener('click', function() {
                         fazerCheckout(quarto);
                         modal.style.display = 'none';
                     });
+                    
+                    // Adicionar evento ao botão de edição
+                    conteudo.querySelector('.edit-btn').addEventListener('click', function() {
+                        modal.style.display = 'none';
+                        abrirEdicaoCheckin(quarto, hospede);
+                    });
                 }
-                
-                // Adicionar evento ao botão de edição
-                conteudo.querySelector('.edit-btn').addEventListener('click', function() {
-                    modal.style.display = 'none';
-                    abrirEdicaoCheckin(quarto, hospede);
-                });
             } else {
                 conteudo.innerHTML = `
                     <div class="status-indicator">
@@ -2287,8 +2415,21 @@
                         <span>Disponível</span>
                     </div>
                     <p>Este quarto está disponível para reserva.</p>
-                    <button class="edit-btn" style="margin-top: 15px;" onclick="document.getElementById('modal-quarto').style.display = 'none'; abrirEdicaoCheckin(${quarto}, null);">Fazer Check-in</button>
+                    <button class="edit-btn" style="margin-top: 15px;">Fazer Check-in</button>
+                    <button class="manutencao-direct-btn" style="margin-top: 10px;">Colocar em Manutenção</button>
                 `;
+                
+                // Adicionar evento ao botão de check-in
+                conteudo.querySelector('.edit-btn').addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    abrirEdicaoCheckin(quarto, null);
+                });
+                
+                // Adicionar evento ao botão de manutenção
+                conteudo.querySelector('.manutencao-direct-btn').addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    abrirManutencaoDireta(quarto);
+                });
             }
             
             modal.style.display = 'flex';
